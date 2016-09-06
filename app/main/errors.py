@@ -5,6 +5,7 @@ from . import main
 
 @main.errorhandler(500)
 def internal_server_error(e):
+    current_app.logger.error(str(e))
     return 'Replace me with proper error handling.'
 
 
