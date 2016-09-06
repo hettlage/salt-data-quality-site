@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, render_template
 
 from . import main
 
@@ -11,7 +11,7 @@ def internal_server_error(e):
 
 @main.errorhandler(404)
 def file_not_found_error(e):
-    return 'Replace me with proper error handling.'
+    return render_template('404.html')
 
 
 @main.errorhandler(Exception)
