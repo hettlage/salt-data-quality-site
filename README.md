@@ -28,8 +28,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Create a file `env_var_prefix` which contains a single line with the prefix to use for the environment variables (such as `FSS_`). The prefix should end with an underscore.
-
 Define the required environment variables, as set out in the section *Environment variables* below. (If you are using an IDE, you might define these in your running configuration.)
 
 You can then run the following commands for launching the (development) server or running the tests.
@@ -44,8 +42,6 @@ You might have to make the script `./run_tests.sh` executable,
 ```bash
 chmod u+x run_tests.sh
 ```
-
-Finally, you should modify the `README.md` file as required.
 
 ### On a remote server
 
@@ -116,7 +112,7 @@ Most of the environment variables must be defined for various configurations, wh
 | testing | `TEST_` |
 | production | no prefix |
 
-Here tests refer to (automated) tests on your machine, and the deployment server could be the production server, or a server for testing.
+The script `run_tests.sh` uses the testing configuration. If you launch the server with the `manage.py` script, the development configuration is used. Code deployed to a remote server uses the production configuration.
 
 For example, if the content of the file `env_var_prefix` is `MY_APP` an environment variable name for the development configuration could be `MY_APP_DEV_DATABASE_URI`.
 
@@ -184,73 +180,13 @@ current_app.logger.error('This is an error.')
 current_app.logger.warning('This is a warning.')
 ```
 
-# Error handling
-
-The main blueprint includes some barebones error handlers in `app/main/errors.py`, which you have to customise. You might also want to add additional error handlers in this file, such as for file not found or authentication errors.
-
-It is a good idea to log internal server errors and raised exceptions using logger described in the section on logging. The `errors.py` file does this in the `exception_raised` function.
-
 # Authentication
 
-Authentication with Flask-Login is included. If you don't need this, you should remove the folder `app/auth`, remove the login manager initialisation
-
-```python
-from flask.ext.login import LoginManager
-...
-login_manager = LoginManager()
-...
-def create_app(config_name):
-    ...
-    login_manager.init_app(app)
-    ...
-```
-
-from the app's initialisation file `app/_init__.py`, remove the folder `app/templates/auth` and remove the Flask-Login dependency
-
-```
-Flask-Login==x.y.z
-```
-
-from the file `requirements.txt` in the root folder. (`x.y.z` denotes a version number.)
-
-The file `app/auth/views.py` contains an example implementation of a user class, as well as the functions required for the login manager. While you have to replace these with whatever need in your project, they should give you an idea of how to work with the login manager. More details can be found in Chapter 8 of Miguel Grinberg's book *Flask Web Development* (O'Reilly).
+Currently no authentication is used, but Flask-Login is included. Modify the content of the `app.auth` package to enable authentication.
 
 # Templates
 
-The `templates` folder contains a base template (`base.html`), a home page (`index.html`) and an authentication form (`auth/login.html`). All of these should be customised to suit your needs.
-
-While all of the templates use Flask-Bootstrap, there is of course no need for that. If you don't want to use Bootstrap, you should remove the line
-
-```html
-{% extends "bootstrap/base.html" %}
-```
-
-from `base.html`, the line
-
-```html
-{% import "bootstrap/wtf.html" as wtf %}
-```
-
-from `auth/login.html` (and update the rest of that template accordingly), the Bootstrap initialisation
-
-```python
-from flask_bootstrap import Bootstrap
-...
-bootstrap = Bootstrap()
-...
-def create_app(config_name):
-    ...
-    bootstrap.init_app(app)
-    ...
-```
-
-from the app's init file (`app/__init__.py`), and the Flask-Bootstrap dependency
-
-```
-Flask-Bootstrap==w.x.y.z
-```
-
-from the file `requirements.txt` in the root folder. (`w.x.y.z` denotes a version number.)
+The Jinja2 templates are located in the folder `app/templates`.
 
 ## Testing
 
