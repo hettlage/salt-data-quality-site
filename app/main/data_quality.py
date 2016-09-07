@@ -34,7 +34,7 @@ def data_quality(name, caption, **kwargs):
                    '</figcaption>' \
                    '</figure>'.format(content=func(*args, **kwargs2), caption=caption)
 
-        _register(inner, name, **kwargs)
+        _register(inner, name, caption=caption, **kwargs)
 
         return inner
     return decorate
