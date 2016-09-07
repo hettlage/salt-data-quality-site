@@ -2,7 +2,7 @@ import functools
 import importlib
 import os
 
-data_quality_items = dict()
+_data_quality_items = dict()
 
 
 def data_quality(name, caption, **kwargs):
@@ -59,7 +59,7 @@ def data_quality_item(package, name):
 
     """
 
-    return data_quality_items[package][name]
+    return _data_quality_items[package][name]
 
 
 def _register(func, name, **kwargs):
@@ -80,9 +80,9 @@ def _register(func, name, **kwargs):
     """
 
     package_name = func.__module__.rsplit('.', 1)[0]
-    if package_name not in data_quality_items:
-        data_quality_items[package_name] = {}
-    d = data_quality_items[package_name]
+    if package_name not in _data_quality_items:
+        _data_quality_items[package_name] = {}
+    d = _data_quality_items[package_name]
     if name in d:
         raise Exception('The package {package} contains multiple functions with a data_quality decorator that '
                         'has the value "{name}" as its name argument.'.format(
