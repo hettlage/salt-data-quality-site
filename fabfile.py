@@ -9,7 +9,7 @@ from config import Config
 # get remote host and username
 prefix = Config.environment_variable_prefix()
 host = os.environ[prefix + 'DEPLOY_HOST']
-username = os.environ[prefix + 'DEPLOY_USERNAME']
+username = os.environ.get(prefix + 'DEPLOY_USERNAME', 'deploy')
 repository = os.environ[prefix + 'DEPLOY_GIT_REPOSITORY']
 app_dir_name = os.environ[prefix + 'DEPLOY_APP_DIR_NAME']
 web_user = os.environ.get(prefix + 'DEPLOY_WEB_USER', 'www-data')
