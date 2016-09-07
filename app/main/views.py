@@ -27,6 +27,7 @@ def data_quality_page(page):
 
     """
 
+    page = page.strip('/')
     page = page.replace('/', '.')  # turn directory path into package name
     try:
         dq = importlib.import_module('app.main.pages.' + page, __package__)
