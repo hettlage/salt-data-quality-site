@@ -1,3 +1,1 @@
-first_plot
-sine
-Third Plot
+weather_downtime

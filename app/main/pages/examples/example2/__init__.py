@@ -8,4 +8,4 @@ def title():
 
 
 def content():
-    return default_data_quality_page(__package__, date(2016, 9, 1), date(2016, 9, 30), include_errors=True)
+    return default_data_quality_page(__package__)
