@@ -188,6 +188,21 @@ Currently no authentication is used, but Flask-Login is included. Modify the con
 
 The Jinja2 templates are located in the folder `app/templates`.
 
+## Database access
+
+The framework includes Flask-SQLAlchemy and makes an SQLAlchemy instance available as a variable `db` in the `app` package. You can, for example, use this to create a Pandas dataframe from an SQL query:
+
+```python
+# Pandas doesn't ship with this framework, but you can install it with
+# pip install pandas
+import pandas as pd
+
+from app import db
+
+sql = 'SELECT * FROM SomeTable'
+df = pd.read_sql(sql, db.engine)
+```
+
 ## Adding a data quality page
 
 In order to add a data quality page you have to take the following steps.
@@ -312,21 +327,40 @@ Your new page is now accessible at `/data-quality/detectors/rss`.
 While ultimately it is up to you how to create a plot or table, the site is including Bokeh, and it is a good idea to use it. The way to do this is to create a Bokeh figure and then use Bokeh's `components` function to obtain the required JavaScript and HTML. Here is a simple example:
 
 ```python
-import numpy as np
+import pandas as pd
 
 from bokeh.embed import components
-from bokeh.plotting import figure
+from bokeh.models.formatters import DatetimeTickFormatter
+from bokeh.plotting import figure, ColumnDataSource
 
-@data_quality(name='sine', caption='The sine function.')
-def sine_plot():
-    x = np.linspace(-10, 10, 100)
-    y = np.sin(x)
-    p = figure(title='Sine', x_axis_label='x', y_axis_label='y')
-    p.line(x, y)
-    
+from app import db
+from app.main.data_quality import data_quality
+
+
+@data_quality(name='weather_downtime', caption='Weather downtime for May 2016.')
+def weather_downtime_plot():
+    sql = 'SELECT Date, TimeLostToWeather FROM NightInfo' \
+          '       WHERE Date >= \'2016-05-01\' AND Date <= \'2016-05-31\' AND TimeLostToProblems IS NOT NULL'
+    df = pd.read_sql(sql, db.engine)
+    source = ColumnDataSource(df)
+
+    date_formatter = DatetimeTickFormatter(formats=dict(hours=['%e %b %Y'],
+                                                        days=['%e %b %Y'],
+                                                        months=['%e %b %Y'],
+                                                        years=['%e %b %Y']))
+
+    p = figure(title='Weather Downtime',
+               x_axis_label='Date',
+               y_axis_label='Downtime (seconds)',
+               x_axis_type='datetime')
+    p.scatter(source=source, x='Date', y='TimeLostToWeather')
+
+    p.xaxis[0].formatter = date_formatter
+
     script, div = components(p)
-    
+
     return '<div>{script}{div}</div>'.format(script=script, div=div)
+```
 
 ## Testing
 
