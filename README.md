@@ -197,7 +197,7 @@ In order to add a data quality page you have to take the following steps.
 
 And that's it. Assuming your new directory is `/app/main/pages/a/b/` you can now access the new page at the URL `/data-quality/a/b` (or `/data-quality/a/b/` - trailing slashes are ignored).
 
-## Example: Hello World
+### Example: Hello World
 
 Let's create a Hello World page which is accessible at `/data-quality/hello/world`. To this end first create the directory for the page:
 
