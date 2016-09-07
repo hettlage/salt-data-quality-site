@@ -307,6 +307,27 @@ downtime
 
 Your new page is now accessible at `/data-quality/detectors/rss`.
 
+### Using Bokeh
+
+While ultimately it is up to you how to create a plot or table, the site is including Bokeh, and it is a good idea to use it. The way to do this is to create a Bokeh figure and then use Bokeh's `components` function to obtain the required JavaScript and HTML. Here is a simple example:
+
+```python
+import numpy as np
+
+from bokeh.embed import components
+from bokeh.plotting import figure
+
+@data_quality(name='sine', caption='The sine function.')
+def sine_plot():
+    x = np.linspace(-10, 10, 100)
+    y = np.sin(x)
+    p = figure(title='Sine', x_axis_label='x', y_axis_label='y')
+    p.line(x, y)
+    
+    script, div = components(p)
+    
+    return '<div>{script}{div}</div>'.format(script=script, div=div)
+
 ## Testing
 
 Unit tests, Behave tests and PEP8 tests are supported.
