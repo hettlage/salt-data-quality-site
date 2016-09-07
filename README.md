@@ -301,7 +301,7 @@ def downtime(from_date, to_date):
  Finally, create a file `content.txt` with the following content.
  
  ```
- throughput
+throughput
 downtime
 ```
 
