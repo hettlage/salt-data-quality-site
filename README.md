@@ -1,6 +1,6 @@
-# Flask Start Setup
+# SALT Data Quality Site
 
-A simple framework for getting started with a Flask site which is based on the books *Flask Web Development* by Miguel Grinberg (O'Reilly) and *Mastering Flask* by Jack Stouffer (Packt Publishing).
+A website for displaying data quality measurements done for the Southern African Large Telescope (SALT).
 
 ## Installation
 
