@@ -45,6 +45,8 @@ chmod u+x run_tests.sh
 
 ### On a remote server
 
+**Important:** When the site is deployed, a file `.env` is created, which contains settings which must be kept secret. **Ensure that this file is not put under version control.**
+
 Ubuntu 14.04 or higher must be running on the remote server. The server should not be used for anything other than running the deployed website.
 
 Create a user `deploy` for deploying the site, and give that user sudo permissions:
@@ -99,6 +101,14 @@ fab setup
 ```
 
 Supervisor, which is used for running the Nginx server, logs both the standard output and the standard error to log files in the folder `/var/log/supervisor`. You should check these log files if the server doesn't start.
+
+For subsequent updates you may just run
+
+```bash
+fab deploy
+```
+
+If you get an internal server error after updating, there might still be a uWSGI process bound to the requested port. In this case rebooting the server should help.
 
 ## Environment variables
 
