@@ -12,8 +12,8 @@ class DataQualityPagesTestCase(NoAuthBaseTestCase):
         Then the page contains data quality content
         """
 
-        response = self.client.get('/data-quality/example')
-        self.assertEquals(200, response.status_code )
+        response = self.client.get('/data-quality/examples/example')
+        self.assertEquals(200, response.status_code)
         self.assertTrue('class="data-quality"' in response.get_data(as_text=True))
 
     def test_data_quality_page_uses_title_from_package(self):
@@ -22,7 +22,7 @@ class DataQualityPagesTestCase(NoAuthBaseTestCase):
         Then the page title is created by the page's __init__.py file
         """
 
-        response = self.client.get('/data-quality/example')
+        response = self.client.get('/data-quality/examples/example')
         self.assertTrue('Example Data Quality Page</title' in response.get_data(as_text=True))
 
     def test_data_quality_page_uses_content_from_package(self):
@@ -31,7 +31,7 @@ class DataQualityPagesTestCase(NoAuthBaseTestCase):
         Then the page content is created by the page's __init__.py file
         """
 
-        response = self.client.get('/data-quality/example')
+        response = self.client.get('/data-quality/examples/example')
         self.assertTrue('This is an example.' in response.get_data(as_text=True))
 
     def test_accessing_non_existing_data_quality_page(self):
@@ -42,6 +42,3 @@ class DataQualityPagesTestCase(NoAuthBaseTestCase):
 
         response = self.client.get('/data-quality/xthdsg73980ui')
         self.assertEquals(404, response.status_code)
-
-
-
