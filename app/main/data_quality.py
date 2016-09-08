@@ -85,10 +85,8 @@ def _register(func, name, **kwargs):
     d = _data_quality_items[package_name]
     if name in d:
         raise Exception('The package {package} contains multiple functions with a data_quality decorator that '
-                        'has the value "{name}" as its name argument.'.format(
-            package=package_name,
-            name=name
-        ))
+                        'has the value "{name}" as its name argument.'.format(package=package_name,
+                                                                              name=name))
     d[name] = (func, kwargs)
 
 

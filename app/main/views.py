@@ -34,4 +34,3 @@ def data_quality_page(page):
     except ImportError:
         raise NotFound
     return render_template('data_quality/data_quality_page.html', title=dq.title(), content=dq.content())
-
