@@ -15,7 +15,7 @@ cd /path/to/site
 git init
 ```
 
-Make sure you've installed Python 3. Create a virtual environment
+Make sure you've installed Java (required for building bundles of static files with Flask-Assets) and Python 3. Create a virtual environment
 
 ```bash
 python3 -m venv venv
@@ -149,7 +149,8 @@ The following variable have no infix (but the prefix!) and are required only if 
 | DEPLOY_GIT_REPOSITORY | Git repository used for deploying the site | Yes | n/a | `git@bitbucket.org:your/repository.git` |
 | DEPLOY_HOST | Address of the deployment server | Yes | n/a | `my-app.org.za` |
 | DEPLOY_DOMAIN_NAME | Domain name for the website | No | Value of `DEPLOY_HOST` | `my-app.org.za` |
-| DEPLOY_USERNAME | Username for the deployment server | No | `deploy` | `deploy` |
+| DEPLOY_USER | User for the deployment server | No | `deploy` | `deploy` |
+| DEPLOY_USER_GROUP | Unix group for the deploy user | No | Value of `DEPLOY_USER` | `deploy` |
 | DEPLOY_APP_DIR_NAME | Directory name for the deployed code | Yes | n/a | `my_app` |
 | DEPLOY_WEB_USER | User for running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_WEB_USER_GROUP | Unix group of the user running the Tornado server | No | `www-data` | `www-data` |
@@ -197,6 +198,49 @@ Currently no authentication is used, but Flask-Login is included. Modify the con
 ## Templates
 
 The Jinja2 templates are located in the folder `app/templates`.
+
+## Static files
+
+Static files should be put in the directory `app/static` (which is Flask's default). Static files have two problems:
+
+1. They should be bundled together, to avoid unnecessarily many HTTP requests.
+2. More importantly, they are cached by browsers, and you must ensure that an updated version will actually be loaded by the browser.
+
+This framework addresses both issues by using the Flask-Assets library, which creates bundles and attaches a GET parameter based on the bundles hash. To make use of this, you first have to define your bundles in the root-level file `webassets.yaml`. Here is an example:
+
+```yaml
+js-all:
+    filters: rjsmin
+    output: cache/all.%(version)s.js
+    contents:
+        - js/a.js
+        - js/b.js
+        - js/c/d.js
+
+css-all:
+    filters: yui_css
+    output: cache/all.%(version)s.css
+    contents:
+        - css/main/a.css
+        - css/main/b.css
+```
+
+Note the dashes before the file paths - these are indeed required! Also note the '%(version)s' - this is a placeholder to be replaced with the first characters of the bundle's hash.
+
+Then you can include any of the defined bundles in a Jinja2 template by using the `assets` tag. For example,
+
+```
+{% block scripts %}
+{{ super() }}
+{% assets 'js-all' %}
+<script src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% endblock %}
+```
+
+The generated bundles are put in the directory `app/static/cache`. When running the server in test or development mode, the original, individual files rather than the bundles will be included.
+
+The deploy script automatically generates the bundles on the production server, rather than relying on them being created on the fly when a page is requested. This implies that you *don't* have to give the web user write access to the cache directory.
 
 ## Database access
 
