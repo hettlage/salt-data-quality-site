@@ -114,8 +114,9 @@ def default_data_quality_content_for_date_range(package, default_start_date=None
     default_end_date: date
         Default end date for the query.
     """
+
     form = DateRangeForm(default_start_date, default_end_date)
-    if form.validate_on_submit():
+    if form.validate():
         start_date = form.start_date.data
         end_date = form.end_date.data
         query_results = _default_data_quality_content(package, start_date=start_date, end_date=end_date)

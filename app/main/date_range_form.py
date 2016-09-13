@@ -10,6 +10,8 @@ class DateRangeForm(Form):
     Default values can be supplied for both the start and date of the range. These will be used if the field value
     isn't set from the GET or POST request parameters.
 
+    CSRF is disabled for this form.
+
     Params:
     -------
     default_start_date: date
@@ -23,7 +25,7 @@ class DateRangeForm(Form):
     submit = SubmitField('Query')
 
     def __init__(self, default_start_date=None, default_end_date=None):
-        Form.__init__(self)
+        Form.__init__(self, csrf_enabled=False)
 
         # change empty fields to default values
         if not self.start_date.data and default_start_date:
