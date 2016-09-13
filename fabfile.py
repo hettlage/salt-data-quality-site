@@ -216,6 +216,9 @@ def setup():
 
 
 def deploy():
+    """Deploy the app to the remote server.
+    """
+
     # test everything
     local('./run_tests.sh')
 
@@ -247,3 +250,10 @@ def deploy():
 
     # update Nginx
     update_nginx_conf()
+
+
+def reboot():
+    """Reboot the remote server.
+    """
+
+    sudo('reboot')
