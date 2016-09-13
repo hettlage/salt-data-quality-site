@@ -117,14 +117,14 @@ def update_webassets():
     static_dir = site_dir + '/app/static'
     webassets_cache = static_dir + '/.webassets-cache'
     cache = static_dir + '/cache'
-    run('if [[ -d {webassets_cache} ]]\n'
-        'then\n'
-        '    rm -r {webassets_cache}\n'
-        'fi'.format(webassets_cache=webassets_cache))
     run('if [[ -d {cache} ]]\n'
         'then\n'
         '    rm -r {cache}\n'
         'fi'.format(cache=cache))
+    sudo('if [[ -d {webassets_cache} ]]\n'
+         'then\n'
+         '    rm -r {webassets_cache}\n'
+         'fi'.format(webassets_cache=webassets_cache))
 
     # create bundles (must be run as root, as the deploy user doesn't own the error log)
     sudo('cd {site_dir}; export FLASK_APP=run_server.py; export FLASK_CONFIG=production; venv/bin/flask assets build'
