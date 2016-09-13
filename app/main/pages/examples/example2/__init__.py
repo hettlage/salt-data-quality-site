@@ -1,6 +1,6 @@
-from datetime import date
+import datetime
 
-from app.main.data_quality import default_data_quality_page
+from app.main.data_quality import default_data_quality_content_for_date_range
 
 
 def title():
@@ -8,4 +8,6 @@ def title():
 
 
 def content():
-    return default_data_quality_page(__package__)
+    return default_data_quality_content_for_date_range(__package__,
+                                                       datetime.datetime.now().date() - datetime.timedelta(days=7),
+                                                       datetime.datetime.now().date())

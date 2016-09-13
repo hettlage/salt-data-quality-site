@@ -2,6 +2,10 @@ import functools
 import importlib
 import os
 
+from flask import render_template
+
+from app.main.date_range_form import DateRangeForm
+
 _data_quality_items = dict()
 
 
@@ -90,7 +94,37 @@ def _register(func, name, **kwargs):
     d[name] = (func, kwargs)
 
 
-def default_data_quality_page(package, *args, **kwargs):
+def default_data_quality_content_for_date_range(package, default_start_date=None, default_end_date=None):
+    """Create default data quality content for a date range query.
+
+    The default data quality content (as created by _default_data_quality_content) is obtained for a date range, which
+    the user can select in an input form.
+
+    The start date for the range is inclusive, the end date exclusive.
+
+    Defaults can be supplied for the start and end date.
+
+    The content is created if the form is valid, irrespective of whether a GET or POST request is made. Otherwise only
+    the form is included.
+
+    Params:
+    -------
+    default_start_date: date
+        Default start date for the query.
+    default_end_date: date
+        Default end date for the query.
+    """
+    form = DateRangeForm(default_start_date, default_end_date)
+    if form.validate_on_submit():
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+        query_results = _default_data_quality_content(package, start_date=start_date, end_date=end_date)
+    else:
+        query_results = ''
+    return render_template('data_quality/data_quality_query_page.html', form=form.html(), query_results=query_results)
+
+
+def _default_data_quality_content(package, *args, **kwargs):
     """Content for a default data quality page.
 
     All the modules of the given package are imported and all data quality item functions (i.e. functions with a
@@ -119,9 +153,9 @@ def default_data_quality_page(package, *args, **kwargs):
     Positional and keyword arguments (other than the first one, which gives the package) are passed on to the functions.
     This implies that all the functions should have the same signature.
 
-    For example, if you call default_data_quality_page as
+    For example, if you call default_data_quality_content as
 
-    default_data_quality_page('app.main.pages.example', from_date, to_date, include_errors=True)
+    default_data_quality_content('app.main.pages.example', from_date, to_date, include_errors=True)
 
     then all the functions named in the content.txt file must conform to the signature
 

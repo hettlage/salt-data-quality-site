@@ -14,7 +14,7 @@ def index():
     return render_template('index.html')
 
 
-@main.route('/data-quality/<path:page>')
+@main.route('/data-quality/<path:page>', methods=['GET', 'POST'])
 def data_quality_page(page):
     """Serve a data quality page.
 

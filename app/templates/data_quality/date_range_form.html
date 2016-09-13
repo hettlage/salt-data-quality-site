@@ -1,0 +1,18 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<form method="POST" class="form-group">
+    {{ form.hidden_tag() }}
+    {{ form.start_date.label() }} {{ form.start_date() }}
+    {% if form.start_date.errors %}
+        {% for e in form.start_date.errors %}
+            <span class="error">{{ e }}</span>
+        {% endfor %}
+    {% endif %}
+    {{ form.end_date.label() }} {{ form.end_date() }}
+    {% if form.end_date.errors %}
+        {% for e in form.end_date.errors %}
+            <span class="error">{{ e }}</span>
+        {% endfor %}
+    {% endif %}
+    {{ form.submit() }}
+</form>
