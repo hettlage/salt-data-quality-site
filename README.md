@@ -317,72 +317,16 @@ Within a package the value for the name argument of the `data_quality` decorator
 
 ### Default data quality pages
 
-If all you need is a page with plots (or tables etc.) stacked one over another, and if all of these items, you can use the `default_data_quality_page` function from the `app.main.data_quality` package to generate the content.
+If all you need is a page with plots (or tables etc.) stacked one over another, and if this page should contain a form for querying a date range, you can use the `default_data_quality_content_for_date_range` function from the `app.main.data_quality` package to generate the content.
 
 To do so, some requirements must be met.
 
 * All the functions for generating a data quality item (such as a plot) must be decorated with the `data_quality` decorator.
-* All of these functions must have the same signature, i.e. accept the same arguments.
+* All of these functions must have the same signature, i.e. accept the same arguments. Most notably, they must accept a `start_date` and `end_date` argument.
 * All these functions must be defined in modules in the page's package.
 * The data quality items to display must be listed in a file `content.txt`in the page's package. Each line in this file must contain the name for the function generating the item, as passed to the name argument of the `data_quality` decorator.
 
-You have to call the `default_data_quality_page` function with the pages package (as a string) and any additional arguments to call the data quality item functions with.
-
-### Example: a default data quality page
-
-Let's create a default data quality page `/data-quality/detectors/rss` with a throughput and a downtime plot (or rather a string pretending to be a plot). Both plots are for the time from 1 September 2016 to 30 September 2016.
-
-The first step is to create the necessary directory.
-
-```bash
-mkdir app/main/pages/detectors
-mkdir app/main/pages/detectors/rss
-```
-
-In the new directory create a file `__init__.py` with the following content.
-
-```python
-import datetime
-
-from app.main.data_quality import default_data_quality_page
-
-
-def title():
-    return 'RSS'
-
-
-def content():
-    return default_data_quality_page(__package__,
-                                     from_date=datetime.date(2016, 9, 1),
-                                     to_date=datetime.date(2016, 9, 30))
-```
-
-Add a file `plots.py` for the plot functions, with the following content.
-
-```python
-from app.main.data_quality import data_quality
-
-
-@data_quality(name='throughput', caption='RSS throughput')
-def throughput(from_date, to_date):
-    return '<div>I pretend to be a throughput plot ranging from {from_date} to {to_date}.' \
-        .format(from_date=from_date, to_date=to_date)
-
-
-@data_quality(name='downtime', caption='RSS downtime')
-def downtime(from_date, to_date):
-    return '<div>I pretend to be a throughput plot ranging from {from_date} to {to_date}.' \
-        .format(from_date=from_date, to_date=to_date)
-```
- 
- Finally, create a file `content.txt` with the following content.
- 
- ```
-throughput
-downtime
-```
-
-Your new page is now accessible at `/data-quality/detectors/rss`.
+You have to call the `default_data_quality_content_for_date_range` function with the pages package (as a string), a default start date, a default end date, and any additional arguments to call the data quality item functions with.
 
 ### Using Bokeh
 
@@ -423,6 +367,147 @@ def weather_downtime_plot():
 
     return '<div>{script}{div}</div>'.format(script=script, div=div)
 ```
+
+### Example: a default data quality page
+
+Let's create a default data quality page `/data-quality/general/downtime` with a weather and engineering downtime plot. Both plots are for a date range supplied by the user.
+
+The first step is to create the necessary directory.
+
+```bash
+mkdir app/main/pages/general
+mkdir app/main/pages/general/downtime
+```
+
+In the new directory create a file `__init__.py` with the following content.
+
+```python
+import datetime
+
+from app.main.data_quality import default_data_quality_content_for_date_range
+
+
+def title():
+    return 'Telescope Downtime'
+
+
+def content():
+    return default_data_quality_content_for_date_range(__package__,
+                                                       datetime.date.today() - datetime.timedelta(days=7),
+                                                       datetime.date.today())
+```
+
+Add a file `plots.py` for the plot functions, with the following content.
+
+```python
+import pandas as pd
+
+from bokeh.embed import components
+from bokeh.models.formatters import DatetimeTickFormatter
+from bokeh.plotting import figure, ColumnDataSource
+
+from app import db
+from app.main.data_quality import data_quality
+
+
+@data_quality(name='weather_downtime', caption='Weather downtime.')
+def weather_downtime_plot(start_date, end_date):
+    """Return a <div> element with a weather downtime plot.
+
+    The plot shows the downtime for the period between start_date (inclusive) and end_date (exclusive).
+
+    Params:
+    -------
+    start_date: date
+        Earliest date to include in the plot.
+    end_date: date
+        Earliest date not to include in the plot.
+
+    Return:
+    -------
+    str:
+        A <div> element with the weather downtime plot.
+    """
+
+    return _downtime_plot('TimeLostToWeather', 'Weather Downtime', start_date, end_date)
+
+
+@data_quality(name='technical_downtime', caption='Downtime due to technical problems.')
+def technical_downtime_plot(start_date, end_date):
+    """Return a <div> element with a plot displaying the downtime due to technical problems.
+
+    The plot shows the downtime for the period between start_date (inclusive) and end_date (exclusive).
+
+    Params:
+    -------
+    start_date: date
+        Earliest date to include in the plot.
+    end_date: date
+        Earliest date not to include in the plot.
+
+    Return:
+    -------
+    str:
+        A <div> element with the weather downtime plot.
+    """
+
+    return _downtime_plot('TimeLostToProblems', 'Downtime due to Technical Problems', start_date, end_date)
+
+
+def _downtime_plot(downtime_column, title, start_date, end_date):
+    """Return a <div> element with a downtime plot.
+
+    The plot shows the downtime for the period between start_date (inclusive) and end_date (exclusive).
+
+    Params:
+    -------
+    downtime_column: str
+        Name of the column in the NightInfo table whose data shall be used.
+    title: str
+        Plot title.
+    start_date: date
+        Earliest date to include in the plot.
+    end_date: date
+        Earliest date not to include in the plot.
+
+    Return:
+    -------
+    str:
+        A <div> element with the weather downtime plot.
+    """
+
+    sql = 'SELECT Date, {downtime_column} FROM NightInfo' \
+          '       WHERE Date >= \'{start_date}\' AND Date < \'{end_date}\' AND TimeLostToProblems IS NOT NULL' \
+        .format(start_date=start_date, end_date=end_date, downtime_column=downtime_column)
+    df = pd.read_sql(sql, db.engine)
+    source = ColumnDataSource(df)
+
+    date_formatter = DatetimeTickFormatter(formats=dict(hours=['%e %b %Y'],
+                                                        days=['%e %b %Y'],
+                                                        months=['%e %b %Y'],
+                                                        years=['%e %b %Y']))
+
+    p = figure(title=title,
+               x_axis_label='Date',
+               y_axis_label='Downtime (seconds)',
+               x_axis_type='datetime')
+    p.scatter(source=source, x='Date', y='{downtime_column}'.format(downtime_column=downtime_column))
+
+    p.xaxis[0].formatter = date_formatter
+
+    script, div = components(p)
+
+    return '<div>{script}{div}</div>'.format(script=script, div=div)
+```
+ 
+Finally, create a file `content.txt` with the following content.
+ 
+```
+weather_downtime
+technical_downtime
+```
+
+Your new page is now accessible at `/data-quality/general/downtime`.
 
 ## Testing
 
