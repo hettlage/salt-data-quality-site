@@ -274,6 +274,9 @@ class Config:
             smtp_handler.setLevel(settings['logging_mail_logging_level'])
             app.logger.addHandler(smtp_handler)
 
+        # use static file bundles?
+        # app.config['ASSETS_DEBUG'] = app.config['DEBUG']
+
         # database access
         app.config['SQLALCHEMY_DATABASE_URI'] = settings['database_uri']
 
