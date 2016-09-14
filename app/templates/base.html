@@ -4,6 +4,10 @@
 
 {% block head %}
     {{ super() }}
+
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/base/jquery-ui.css"/>
+
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.2.min.css"
@@ -61,6 +65,11 @@
 
 {% block scripts %}
     {{ super() }}
+
+    <!-- jQuery UI -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+
+    <!-- own JavaScript -->
     {% assets 'js-all' %}
         <script src="{{ ASSET_URL }}"></script>
     {% endassets %}

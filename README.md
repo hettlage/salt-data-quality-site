@@ -374,6 +374,8 @@ def weather_downtime_plot():
     return '<div>{script}{div}</div>'.format(script=script, div=div)
 ```
 
+Bokeh uses a fairly high z-index (100) for its html elements, which may cause itv to hide other (dynamic) elements like a datepicker. You then have to increase the latter's z-index. In case of a jQuery datepicker you would assigning `position: relative` and `z-index: 1000` to an ancestor of the input field using the datepicker. You may of course choose a value other than 1000, as long as it's higher than the z-index used by Bokeh.
+
 ### Example: a default data quality page
 
 Let's create a default data quality page `/data-quality/general/downtime` with a weather and engineering downtime plot. Both plots are for a date range supplied by the user.

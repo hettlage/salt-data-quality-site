@@ -2,6 +2,7 @@ js-all:
     filters: rjsmin
     output: cache/all.%(version)s.js
     contents:
+        - js/ui.js
         - js/store_parameters.js
 
 css-all:
