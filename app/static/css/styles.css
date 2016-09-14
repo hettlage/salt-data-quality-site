@@ -4,5 +4,5 @@
 
 form.date-range {
     position: relative;
-    z-index: 1000;
+    z-index: 200;
 }
