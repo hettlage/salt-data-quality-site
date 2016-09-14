@@ -517,6 +517,10 @@ technical_downtime
 
 Your new page is now accessible at `/data-quality/general/downtime`.
 
+## Adding a Plot
+
+This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian. 
+
 ## Testing
 
 Unit tests, Behave tests and PEP8 tests are supported.
