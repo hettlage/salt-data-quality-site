@@ -6,3 +6,7 @@ form.date-range {
     position: relative;
     z-index: 200;
 }
+
+button.save-plots {
+    margin-top: 25px;
+}

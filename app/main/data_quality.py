@@ -9,7 +9,7 @@ from app.main.date_range_form import DateRangeForm
 _data_quality_items = dict()
 
 
-def data_quality(name, caption, **kwargs):
+def data_quality(name, caption, export_name=None, **kwargs):
     """Decorator for data quality items to be displayed.
 
     The function to decorate must return a string with a valid HTML element. This element is wrapped in a <figure>
@@ -25,20 +25,27 @@ def data_quality(name, caption, **kwargs):
         Name for identifying the decorated function.
     caption: str
         Text to use as caption.
+    export_name: str
+        Name to use as filename when this item is exported to file (without the file extension). The default is to use
+        the value of the name argument.
     **kwargs: keyword arguments
         Other keyword arguments.
     """
 
     def decorate(func):
+        _export_name = export_name if export_name else name
+
         @functools.wraps(func)
         def inner(*args, **kwargs2):
-            return '<figure>{content}\n' \
+            return '<figure class="data-quality-item" data-export-name="{export_name}">{content}\n' \
                    '<figcaption>\n' \
                    '{caption}' \
                    '</figcaption>' \
-                   '</figure>'.format(content=func(*args, **kwargs2), caption=caption)
+                   '</figure>'.format(content=func(*args, **kwargs2),
+                                      caption=caption,
+                                      export_name=_export_name)
 
-        _register(inner, name, caption=caption, **kwargs)
+        _register(inner, name, caption=caption, export_name=_export_name, **kwargs)
 
         return inner
     return decorate

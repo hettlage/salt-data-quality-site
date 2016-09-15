@@ -4,6 +4,14 @@ js-all:
     contents:
         - js/ui.js
         - js/store_parameters.js
+        - js/save_bokeh_plots.js
+
+js-libraries:
+    filters: rjsmin
+    output: cache/libraries.%(version)s.js
+    contents:
+        - js/libraries/FileSaver.js
+        - js/libraries/jszip.js
 
 css-all:
     filters: yui_css
