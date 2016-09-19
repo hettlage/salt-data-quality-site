@@ -28,9 +28,12 @@ def rss_bias_plot(start_date, end_date):
     """
     title = "RSS Bias Levels"
     column = 'BkgdMean'
-    start_date='2016-05-01'
-    end_date='2016-06-01'
-    sql = "select UTStart, {column} from PipelineDataQuality_CCD join FileData using (FileData_Id) where UTStart > '{start_date}' and UTStart <'{end_date}' and FileName like 'P%%' and Target_Name='BIAS'".format(column=column, start_date=start_date, end_date=end_date)
+    start_date = '2016-05-01'
+    end_date = '2016-06-01'
+    sql = "select UTStart, {column} from PipelineDataQuality_CCD join FileData using (FileData_Id) " \
+          "       where UTStart > '{start_date}' and UTStart <'{end_date}' and FileName like 'P%%' " \
+          "             and Target_Name='BIAS'"\
+        .format(column=column, start_date=start_date, end_date=end_date)
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
 
@@ -50,4 +53,3 @@ def rss_bias_plot(start_date, end_date):
     script, div = components(p)
 
     return '<div>{script}{div}</div>'.format(script=script, div=div)
-
