@@ -519,7 +519,38 @@ Your new page is now accessible at `/data-quality/general/downtime`.
 
 ## Adding a Plot
 
-This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian. 
+This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian.    
+
+1. Log into the development machine as user deploy.
+2. Move into the directory for the page you want to add a plot to
+
+    ```cd saltstatsdev.cape.saao.ac.za/app/main/pages/instrument/rss```
+3. Check out a new branch to develop on
+
+    ```git checkout -b rss_bias``
+4. Make sure that your current branch is up to date.
+
+    ```git pull origin master```
+5. In plot.py, create the plot that you want to make.   
+6. Add the name of the plot to the `content.txt`
+7. Deploy a test server and test the plot.
+
+    a. In a new terminal, log in and move into the project directory and start up the server
+
+        ```
+        cd saltstatsdev.cape.saao.ac.za
+        sudo venv/bin/python manage.py runserver  -p 81 -h 0.0.0.0
+        ```
+    b. On a browser on your own machine, you should now be able to navigate to http://saltstatsdev.cape.saao.ac.za:81/ and see the site.
+    
+    c.  Navigate to the page you have created and you should be able to now see the plot added
+to your site.
+
+    d.  If there is an error or the plot does not display, check the `/home/deploy/errors.log` file for details.  Once the code has been updated, reload the page to see if it will display without errors.   
+8. Once the plot works, commit the code to github. 
+9. Alert Christian to restart the server so that the new plot is displayed on the live site. 
+
+
 
 ## Testing
 
