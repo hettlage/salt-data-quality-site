@@ -2,6 +2,8 @@ import functools
 import importlib
 import os
 
+from bokeh.embed import components
+from bokeh.model import Model
 from flask import render_template
 
 from app.main.date_range_form import DateRangeForm
@@ -34,21 +36,65 @@ def data_quality(name, caption, export_name=None, **kwargs):
 
     def decorate(func):
         _export_name = export_name if export_name else name
+        _register(func, name, caption=caption, export_name=_export_name, **kwargs)
 
-        @functools.wraps(func)
-        def inner(*args, **kwargs2):
-            return '<figure class="data-quality-item" data-export-name="{export_name}">{content}\n' \
-                   '<figcaption>\n' \
-                   '{caption}' \
-                   '</figcaption>' \
-                   '</figure>'.format(content=func(*args, **kwargs2),
-                                      caption=caption,
-                                      export_name=_export_name)
-
-        _register(inner, name, caption=caption, export_name=_export_name, **kwargs)
-
-        return inner
+        return func
     return decorate
+
+
+def data_quality_item_html(item, caption=None, export_name='item'):
+    """Create the HTML for a data quality item.
+
+    The generated html looks as follows.
+
+    <figure class="data-quality-item" data-export-name="... your export name here ...">
+        {... your data item content here ...}
+        <figcaption>
+            {caption}
+        </figcaption>
+    </figure>
+
+    By default, the string representation of the item is used as data item content. However, if the item is a Bokeh
+    model, Bokeh's components function is used to generate the necessary html.
+
+    The figure caption is included only if the corresponding argument has a truthy value.
+
+    The export name is intended to be used as filename when the item is exported to file. It thus should be unique
+    weithin a page, but this isn't enforced.
+
+    Params:
+    -------
+    item: object
+        Data quality item.
+    caption: str
+        Figure caption.
+    export_name: str
+        Filename for exporting the data quality item.
+
+    Return:
+    -------
+    str:
+        HTML representing the data quality item.
+    """
+
+    if isinstance(item, Model):
+        script, div = components(item)
+        content = '<div>{script}{div}</div>'.format(script=script, div=div)
+    else:
+        content = str(item)
+
+    figcaption = ''
+    if caption:
+        figcaption = '    <figcaption>\n' \
+                     '        {caption}\n' \
+                     '    </figcaption>'.format(caption=caption)
+    return '<figure class="data-quality-item" data-export-name="{export_name}">' \
+           '    {content}\n' \
+           '    {figcaption}\n' \
+           '</figure>'.format(content=content,
+                              figcaption=figcaption,
+                              export_name=export_name)
+
 
 
 def data_quality_item(package, name):
@@ -213,8 +259,11 @@ def _default_data_quality_content(package, *args, **kwargs):
         for line in f:
             line = line.strip()
             if line:
-                func = data_quality_item(package, line)[0]
-                html += func(*args, **kwargs) + '\n'
+                dqi = data_quality_item(package, line)
+                item = dqi[0](*args, **kwargs)
+                caption = dqi[1].get('caption')
+                export_name = dqi[1].get('export_name')
+                html += data_quality_item_html(item, caption=caption, export_name=export_name) + '\n'
     html += '</div>'
 
     return html
