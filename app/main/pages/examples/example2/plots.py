@@ -69,12 +69,12 @@ def _downtime_plot(downtime_column, title, start_date, end_date):
 
     Return:
     -------
-    str:
-        A <div> element with the weather downtime plot.
+    bokeh.model.Model:
+        The downtime plot.
     """
 
     sql = 'SELECT Date, {downtime_column} FROM NightInfo' \
-          '       WHERE Date >= \'{start_date}\' AND Date < \'{end_date}\' AND TimeLostToProblems IS NOT NULL' \
+          '       WHERE Date >= \'{start_date}\' AND Date < \'{end_date}\' AND {downtime_column} IS NOT NULL' \
         .format(start_date=start_date, end_date=end_date, downtime_column=downtime_column)
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
