@@ -6,6 +6,8 @@ from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
 from app.main.data_quality import data_quality
+from app.main.data_quality_plots import data_quality_date_plot
+
 
 
 @data_quality(name='rss_bias', caption='Mean RSS Bias Background levels')
@@ -28,28 +30,8 @@ def rss_bias_plot(start_date, end_date):
     """
     title = "RSS Bias Levels"
     column = 'BkgdMean'
-    start_date = '2016-05-01'
-    end_date = '2016-06-01'
-    sql = "select UTStart, {column} from PipelineDataQuality_CCD join FileData using (FileData_Id) " \
-          "       where UTStart > '{start_date}' and UTStart <'{end_date}' and FileName like 'P%%' " \
-          "             and Target_Name='BIAS'"\
-        .format(column=column, start_date=start_date, end_date=end_date)
-    df = pd.read_sql(sql, db.engine)
-    source = ColumnDataSource(df)
+    table = 'PipelineDataQuality_CCD'
+    logic = " and FileName like 'P%%' and Target_Name='BIAS'"
+    y_axis_label='Bias Background Mean (e)'
+    return data_quality_date_plot(start_date, end_date, title, column, table, logic=logic, y_axis_label=y_axis_label)
 
-    date_formatter = DatetimeTickFormatter(formats=dict(hours=['%e %b %Y'],
-                                                        days=['%e %b %Y'],
-                                                        months=['%e %b %Y'],
-                                                        years=['%e %b %Y']))
-
-    p = figure(title=title,
-               x_axis_label='Date',
-               y_axis_label='Bias Background Mean (e)',
-               x_axis_type='datetime')
-    p.scatter(source=source, x='UTStart', y=column)
-
-    p.xaxis[0].formatter = date_formatter
-
-    script, div = components(p)
-
-    return '<div>{script}{div}</div>'.format(script=script, div=div)
