@@ -15,17 +15,14 @@ cd /path/to/site
 git init
 ```
 
-Make sure you've installed Java (required for building bundles of static files with Flask-Assets) and Python 3. Create a virtual environment
+[Anaconda](https://docs.continuum.io/anaconda/install) or [Miniconda](http://conda.pydata.org/miniconda.html) must be installed.
+
+Make sure you've installed [Java](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) (required for building bundles of static files with Flask-Assets).
+
+Open the file `environment.yml` and replace the environment name with a more suitable one. Save the file and create the environment by executing
 
 ```bash
-python3 -m venv venv
-```
-
-and then install the required Python libraries,
-
-```bash
-source venv/bin/activate
-pip install -r requirements.txt
+conda env create -f environment.yml
 ```
 
 Define the required environment variables, as set out in the section *Environment variables* below. (If you are using an IDE, you might define these in your running configuration.)
@@ -59,6 +56,8 @@ gpasswd -a deploy sudo
 You may choose another username for this user, but then you have to set the `<PREFIX>_SERVER_USERNAME` environment variable accordingly. See the section on environment variables for an explanation of the prefix.
 
 Make sure wget is installed on the server.
+
+Login as the deploy user and install [Anaconda](https://docs.continuum.io/anaconda/install) or [Miniconda](http://conda.pydata.org/miniconda.html).
 
 Unless your repository has public access, you should also generate an SSL key for the deploy user. Check whether there is a file `~/.ssh/id_rsa.pub` already. If there isn't, create a new public key by running
 
@@ -160,6 +159,7 @@ The following variable have no infix (but the prefix!) and are required only if 
 | DEPLOY_APP_DIR_NAME | Directory name for the deployed code | Yes | n/a | `my_app` |
 | DEPLOY_WEB_USER | User for running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_WEB_USER_GROUP | Unix group of the user running the Tornado server | No | `www-data` | `www-data` |
+| DEPLOY_CONDA_DIR | Anaconda root directory on the deployment server | Yes | n/a | `/home/deploy/anaconda` |
 
 ## Adding your own environment variables
 
@@ -271,6 +271,8 @@ sql = 'SELECT * FROM SomeTable'
 df = pd.read_sql(sql, db.engine)
 ```
 
+When using Pandas' `read_sql` function you should bear in mind that the MySQL wildcard % has to be escaped by another %, as the query is parsed as a Python format string.
+
 ## Adding a data quality page
 
 In order to add a data quality page you have to take the following steps.
@@ -310,16 +312,18 @@ Also, all of these functions should be decorated with the `data_quality` decorat
 ```python
 from app.main.data_quality import data_quality
 
-@data_quality(name='throughput_plot`, caption='Plot of the RSS throughput.')
+@data_quality(name='throughput_plot`, caption='Plot of the RSS throughput.', export_name='throughput_plot')
 def throughput():
     return '<div>...</div>'
 ```
 
-The decorator plays two roles. First it stores the function under the name given by its `name` argument, along with all the arguments (apart from the name) passed to the decorator. You can access these using the `data_quality_item` function (also in the package `app.main.data_quality`), which expects the name (as used in the function's decorator) and package as its arguments.
-
-Second it wraps the content returned by the function in a `<figure>` element, along with a `<figcaption>` element. The decorator's caption argument is used as the caption text.
+The decorator stores the function under the name given by its `name` argument, along with all the arguments (apart from the name) passed to the decorator. You can access these using the `data_quality_item` function (also in the package `app.main.data_quality`), which expects the name (as used in the function's decorator) and package as its arguments.
 
 Within a package the value for the name argument of the `data_quality` decorator must be unique.
+
+The function should return a Bokeh model (such as a plot) or a string containing a valid HTML element.
+
+It is up to you what to with the return value, but it is a good idea to use the `data_quality_item_html` function in the module `app.main.data_quality` to generate it into HTNML for a data quality page. Note that this function automatically creates the relevant HTML for Bokeh models.
 
 ### Default data quality pages
 
@@ -328,15 +332,16 @@ If all you need is a page with plots (or tables etc.) stacked one over another, 
 To do so, some requirements must be met.
 
 * All the functions for generating a data quality item (such as a plot) must be decorated with the `data_quality` decorator.
-* All of these functions must have the same signature, i.e. accept the same arguments. Most notably, they must accept a `start_date` and `end_date` argument.
+* All of these functions must have the same signature, i.e. accept the same arguments. Most notably, they must accept a `start_date` and `end_date` argument. String values should be accepted for all the function arguments, at least if the function is returning a Bokeh model and you are planning to use the `test_bokeh_model.py` script (see below).
 * All these functions must be defined in modules in the page's package.
+* All these functions must return a Bokeh model (such as a plot) or a string containing a valid HTML element.
 * The data quality items to display must be listed in a file `content.txt`in the page's package. Each line in this file must contain the name for the function generating the item, as passed to the name argument of the `data_quality` decorator.
 
 You have to call the `default_data_quality_content_for_date_range` function with the pages package (as a string), a default start date, a default end date, and any additional arguments to call the data quality item functions with.
 
 ### Using Bokeh
 
-While ultimately it is up to you how to create a plot or table, the site is including Bokeh, and it is a good idea to use it. The way to do this is to create a Bokeh figure and then use Bokeh's `components` function to obtain the required JavaScript and HTML. Here is a simple example:
+While ultimately it is up to you how to create a plot or table, the site is including Bokeh, and it is a good idea to use it. You can just return the created  Bokeh model; there is no need to convert it into HTML. Here is a simple example:
 
 ```python
 import pandas as pd
@@ -369,9 +374,7 @@ def weather_downtime_plot():
 
     p.xaxis[0].formatter = date_formatter
 
-    script, div = components(p)
-
-    return '<div>{script}{div}</div>'.format(script=script, div=div)
+    return p
 ```
 
 Bokeh uses a fairly high z-index (100) for its html elements, which may cause itv to hide other (dynamic) elements like a datepicker. You then have to increase the latter's z-index. In case of a jQuery datepicker you would assigning `position: relative` and `z-index: 1000` to an ancestor of the input field using the datepicker. You may of course choose a value other than 1000, as long as it's higher than the z-index used by Bokeh.
@@ -480,12 +483,12 @@ def _downtime_plot(downtime_column, title, start_date, end_date):
 
     Return:
     -------
-    str:
-        A <div> element with the weather downtime plot.
+    bokeh.model.Model:
+        The downtime plot.
     """
 
     sql = 'SELECT Date, {downtime_column} FROM NightInfo' \
-          '       WHERE Date >= \'{start_date}\' AND Date < \'{end_date}\' AND TimeLostToProblems IS NOT NULL' \
+          '       WHERE Date >= \'{start_date}\' AND Date < \'{end_date}\' AND {downtime_column} IS NOT NULL' \
         .format(start_date=start_date, end_date=end_date, downtime_column=downtime_column)
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
@@ -521,7 +524,7 @@ Your new page is now accessible at `/data-quality/general/downtime`.
 
 This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian.    
 
-1. Log into the development machine as user deploy.
+1. Log into the development machine as user deploy. For testing you'll need an X11 connection, so use the `-X` flag with `ssh`.
 2. Move into the directory for the page you want to add a plot to
 
     ```cd saltstatsdev.cape.saao.ac.za/app/main/pages/instrument/rss```
@@ -531,15 +534,17 @@ This is for adding a plot to an already existing page.   If a page is needed, se
 4. Make sure that your current branch is up to date.
 
     ```git pull origin master```
-5. In plot.py, create the plot that you want to make.   
-6. Add the name of the plot to the `content.txt`
-7. Deploy a test server and test the plot.
+5. In a Python file (`plots.py`, say) in this directory add a function returning your plot. Make sure to annotate your function with a `data_quality` decorator, as described above.
+6. Use the `test_bokeh_plot` in the root folder for testing your plot (see below).
+7. Add the name of the plot (as used in the `name` argument of the `data_quality` decorator) to the `content.txt` file.
+8. Deploy a test server and test the plot.
 
     a. In a new terminal, log in and move into the project directory and start up the server
 
         ```
         cd saltstatsdev.cape.saao.ac.za
-        sudo venv/bin/python manage.py runserver  -p 81 -h 0.0.0.0
+        source activate salt_data_quality
+        python manage.py runserver  -p 81 -h 0.0.0.0
         ```
     b. On a browser on your own machine, you should now be able to navigate to http://saltstatsdev.cape.saao.ac.za:81/ and see the site.
     
@@ -550,7 +555,27 @@ to your site.
 8. Once the plot works, commit the code to github. 
 9. Alert Christian to restart the server so that the new plot is displayed on the live site. 
 
+### Using the test_bokeh_model.py script
 
+For convenience, the app's root folder (`~deploy/saltstatsdev.cape.saao.ac') contains a script for testing Bokeh models (such as plots). To use this script, first activate the environment (if it isn't active already),
+
+```bash
+source activate salt_data_quality
+```
+
+You can then run the script as follows,
+
+```bash
+python test_bokeh_model.py path/to/your/plots/file plot_function_name [plot_function_arg1 plot_function_arg2 ...]
+```
+
+The path is that of the Python file containing your plot function, the function name is the name of your function (*not* the name attribute of its `data_quality` decorator), and the remaining arguments are passed to your function.
+
+For example, a call to the script might be
+
+```bash
+python test_bokeh.py app/main/pages/examples/example2/plots.py weather_downtime_plot 2016-06-01 2016-06-19
+```
 
 ## Testing
 
