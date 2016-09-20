@@ -6,14 +6,25 @@ import sys
 import traceback
 
 from bokeh.plotting import output_file, show
+from fabulous.color import bold, red
 
 from app import create_app
 
 
-def error(message):
-    """Print an error message and exit."""
+def error(msg, stacktrace=None):
+    """Print an error message and exit.
 
-    print(message)
+    Params:
+    -------
+    msg: str
+        Error message.
+    stacktrace: str
+        Stacktrace.
+    """
+
+    if stacktrace:
+        print(stacktrace)
+    print(bold(red(msg)))
     sys.exit(1)
 
 # get command line arguments
@@ -66,17 +77,19 @@ app_context.push()
 
 # get the Bokeh model
 func = functions[0][1]
-model = func(*args.func_args)
+try:
+    model = func(*args.func_args)
+except:
+    error('The call to function "{func}" failed.'.format(func=args.model_function),
+          traceback.format_exc(1))
 
 # output the model
 output_file('/tmp/bokeh_test.html')
 try:
     show(model)
 except:
-    message = traceback.format_exc() +\
-              '\nThe Bokeh model couldn\'t be output. (Is your function returning a Bokeh model?)'
-    error(message)
+    error('The Bokeh model couldn\'t be output. (Is your function returning a Bokeh model?)',
+          traceback.format_exc())
 
 # clean up
 app_context.pop()
-
