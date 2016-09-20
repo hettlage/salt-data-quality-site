@@ -1,6 +1,5 @@
 import pandas as pd
 
-from bokeh.embed import components
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
@@ -16,9 +15,9 @@ def weather_downtime_plot(start_date, end_date):
 
     Params:
     -------
-    start_date: date
+    start_date: str
         Earliest date to include in the plot.
-    end_date: date
+    end_date: str
         Earliest date not to include in the plot.
 
     Return:
@@ -38,9 +37,9 @@ def technical_downtime_plot(start_date, end_date):
 
     Params:
     -------
-    start_date: date
+    start_date: str
         Earliest date to include in the plot.
-    end_date: date
+    end_date: str
         Earliest date not to include in the plot.
 
     Return:
@@ -63,9 +62,9 @@ def _downtime_plot(downtime_column, title, start_date, end_date):
         Name of the column in the NightInfo table whose data shall be used.
     title: str
         Plot title.
-    start_date: date
+    start_date: str
         Earliest date to include in the plot.
-    end_date: date
+    end_date: str
         Earliest date not to include in the plot.
 
     Return:
@@ -93,6 +92,4 @@ def _downtime_plot(downtime_column, title, start_date, end_date):
 
     p.xaxis[0].formatter = date_formatter
 
-    script, div = components(p)
-
-    return '<div>{script}{div}</div>'.format(script=script, div=div)
+    return p
