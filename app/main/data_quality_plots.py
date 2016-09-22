@@ -1,6 +1,5 @@
 import pandas as pd
 
-from bokeh.embed import components
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
