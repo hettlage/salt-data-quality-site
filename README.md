@@ -256,6 +256,10 @@ webassets.env.RegisterError: Another bundle is already registered as ...
 
 This site circumvents the issue by removing all existing bundles before attempting to load bundles in the app's `__init__.py` file.
 
+## Potential pitfalls
+
+* If you are accessing the database using Pandas' `read_sql` function, you must use '%%' instead of '%' in your SQL query strings.
+
 ## Database access
 
 The framework includes Flask-SQLAlchemy and makes an SQLAlchemy instance available as a variable `db` in the `app` package. You can, for example, use this to create a Pandas dataframe from an SQL query:
