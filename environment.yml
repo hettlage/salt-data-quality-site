@@ -14,7 +14,7 @@ dependencies:
 - markupsafe=0.23=py35_2
 - mkl=11.3.3=0
 - numpy=1.11.1=py35_0
-- openssl=1.0.2h=2
+- openssl=1.0.2h=1
 - pandas=0.18.1=np111py35_0
 - paramiko=2.0.2=py35_0
 - pip=8.1.2=py35_0
