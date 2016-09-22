@@ -9,7 +9,6 @@ from app.main.data_quality import data_quality
 from app.main.data_quality_plots import data_quality_date_plot
 
 
-
 @data_quality(name='rss_bias', caption='Mean RSS Bias Background levels')
 def rss_bias_plot(start_date, end_date):
     """Return a <div> element with a weather downtime plot.
@@ -32,6 +31,5 @@ def rss_bias_plot(start_date, end_date):
     column = 'BkgdMean'
     table = 'PipelineDataQuality_CCD'
     logic = " and FileName like 'P%%' and Target_Name='BIAS'"
-    y_axis_label='Bias Background Mean (e)'
+    y_axis_label = 'Bias Background Mean (e)'
     return data_quality_date_plot(start_date, end_date, title, column, table, logic=logic, y_axis_label=y_axis_label)
-

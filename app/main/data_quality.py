@@ -96,7 +96,6 @@ def data_quality_item_html(item, caption=None, export_name='item'):
                               export_name=export_name)
 
 
-
 def data_quality_item(package, name):
     """Return the data quality item details for a package and name.
 
