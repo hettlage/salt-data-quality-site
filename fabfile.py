@@ -38,13 +38,15 @@ def upgrade_libs():
 
 
 def update_supervisor():
-    tmp_supervisor_conf = '/tmp/supervisor.{timestamp}.conf'.format(timestamp=time.time())
-    sudo('sed s=---CONDA_ENV_PATH---={conda_env_dir}= {site_dir}/supervisor.conf > {tmp_supervisor_conf}'.format(
-        conda_env_dir=conda_env_dir, site_dir=site_dir, tmp_supervisor_conf=tmp_supervisor_conf))
-    sudo('sed s=---SITE_PATH---={site_dir}= {tmp_supervisor_conf} > {tmp_supervisor_conf}'.format(
-        site_dir=site_dir, tmp_supervisor_conf=tmp_supervisor_conf))
-    sudo('sed s=---WEB_USER---={web_user}= {tmp_supervisor_conf} > /etc/supervisor/conf.d/supervisor.conf'.format(
-        web_user=web_user, tmp_supervisor_conf=tmp_supervisor_conf))
+    timestamp=time.time()
+    tmp_supervisor_conf_1 = '/tmp/supervisor.{timestamp}.1.conf'.format(timestamp=timestamp)
+    tmp_supervisor_conf_2 = '/tmp/supervisor.{timestamp}.2.conf'.format(timestamp=timestamp)
+    sudo('sed s=---CONDA_ENV_PATH---={conda_env_dir}= {site_dir}/supervisor.conf > {tmp_supervisor_conf_1}'.format(
+        conda_env_dir=conda_env_dir, site_dir=site_dir, tmp_supervisor_conf_1=tmp_supervisor_conf_1))
+    sudo('sed s=---SITE_PATH---={site_dir}= {tmp_supervisor_conf_1} > {tmp_supervisor_conf_2}'.format(
+        site_dir=site_dir, tmp_supervisor_conf_1=tmp_supervisor_conf_1, tmp_supervisor_conf_2=tmp_supervisor_conf_2))
+    sudo('sed s=---WEB_USER---={web_user}= {tmp_supervisor_conf_2} > /etc/supervisor/conf.d/supervisor.conf'.format(
+        web_user=web_user, tmp_supervisor_conf_2=tmp_supervisor_conf_2))
     sudo('service supervisor restart')
 
 
@@ -160,7 +162,6 @@ def update_conda_environment():
     run('cd {site_dir}\n'
         '{conda_env_command} env update -f environment.yml'
         .format(conda_env_command=conda_root_command, site_dir=site_dir))
-
 
 
 def setup():
