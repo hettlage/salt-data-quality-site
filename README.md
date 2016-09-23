@@ -15,9 +15,18 @@ cd /path/to/site
 git init
 ```
 
-[Anaconda](https://docs.continuum.io/anaconda/install) or [Miniconda](http://conda.pydata.org/miniconda.html) must be installed.
+Make sure you've installed [Java](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) (required for building bundles of static files with Flask-Assets) and Python 3. Create a virtual environment
 
-Make sure you've installed [Java](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) (required for building bundles of static files with Flask-Assets).
+```bash
+python3 -m venv venv
+```
+
+and then install the required Python libraries,
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 Open the file `environment.yml` and replace the environment name with a more suitable one. Save the file and create the environment by executing
 
@@ -56,8 +65,6 @@ gpasswd -a deploy sudo
 You may choose another username for this user, but then you have to set the `<PREFIX>_SERVER_USERNAME` environment variable accordingly. See the section on environment variables for an explanation of the prefix.
 
 Make sure wget is installed on the server.
-
-Login as the deploy user and install [Anaconda](https://docs.continuum.io/anaconda/install) or [Miniconda](http://conda.pydata.org/miniconda.html).
 
 Unless your repository has public access, you should also generate an SSL key for the deploy user. Check whether there is a file `~/.ssh/id_rsa.pub` already. If there isn't, create a new public key by running
 
@@ -159,7 +166,6 @@ The following variable have no infix (but the prefix!) and are required only if 
 | DEPLOY_APP_DIR_NAME | Directory name for the deployed code | Yes | n/a | `my_app` |
 | DEPLOY_WEB_USER | User for running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_WEB_USER_GROUP | Unix group of the user running the Tornado server | No | `www-data` | `www-data` |
-| DEPLOY_CONDA_DIR | Anaconda root directory on the deployment server | Yes | n/a | `/home/deploy/anaconda` |
 
 ## Adding your own environment variables
 
@@ -547,7 +553,7 @@ This is for adding a plot to an already existing page.   If a page is needed, se
 
         ```
         cd saltstatsdev.cape.saao.ac.za
-        source activate salt_data_quality
+        source venv/bin/activate
         python manage.py runserver  -p 81 -h 0.0.0.0
         ```
     b. On a browser on your own machine, you should now be able to navigate to http://saltstatsdev.cape.saao.ac.za:81/ and see the site.
@@ -561,10 +567,10 @@ to your site.
 
 ### Using the test_bokeh_model.py script
 
-For convenience, the app's root folder (`~deploy/saltstatsdev.cape.saao.ac') contains a script for testing Bokeh models (such as plots). To use this script, first activate the environment (if it isn't active already),
+For convenience, the app's root folder (`~deploy/saltstatsdev.cape.saao.ac') contains a script for testing Bokeh models (such as plots). To use this script, first activate the virtual environment (if it isn't active already),
 
 ```bash
-source activate salt_data_quality
+source venv/bin/activate
 ```
 
 You can then run the script as follows,
