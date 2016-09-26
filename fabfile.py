@@ -28,7 +28,7 @@ def upgrade_libs():
 
 
 def update_supervisor():
-    sed = 'sed s=---SITE_PATH---={site_dir}= ' \
+    sed = 'sed s=---SITE_PATH---={site_dir}= {site_dir}/supervisor.conf' \
           '| sed s=---WEB_USER---={web_user}='.format(
         site_dir=site_dir,
         web_user=web_user)
