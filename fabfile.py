@@ -186,11 +186,14 @@ def setup():
     # nginx
     sudo('apt-get install -y nginx')
 
-    # clone the repository (if it doesn't exist yet)
+    # clone the Git repository (if it doesn't exist yet)
     run('if [[ ! -d {site_dir} ]]\n'
         'then\n'
         '    git clone {repository} {site_dir}\n'
         'fi'.format(repository=repository, site_dir=site_dir))
+
+    # update the Git repository
+    run('cd {site_dir}; git pull'.format(site_dir=site_dir))
 
     # create environment variable prefix file
     run('cd {site_dir}; echo {prefix} > env_var_prefix'.format(prefix=prefix, site_dir=site_dir))
