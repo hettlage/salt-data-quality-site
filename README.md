@@ -66,6 +66,8 @@ You may choose another username for this user, but then you have to set the `<PR
 
 Make sure wget is installed on the server.
 
+Login as the deploy user.
+
 Unless your repository has public access, you should also generate an SSL key for the deploy user. Check whether there is a file `~/.ssh/id_rsa.pub` already. If there isn't, create a new public key by running
 
 ```bash
@@ -266,7 +268,18 @@ This site circumvents the issue by removing all existing bundles before attempti
 ## Potential pitfalls
 
 * If you are accessing the database using Pandas' `read_sql` function, you must use '%%' instead of '%' in your SQL query strings.
-* If you are using a DatetimeTickFormatter in Bokeh, you should define a format for all possible timescales. If Bokeh tries to draw a plot for a timescale for which no format has been defined, you get a cryptic JavaScript error like "TypeError: undefined is not an object (evaluating 'T')".
+* If you are using a DatetimeTickFormatter in Bokeh, you *must* define a format for all possible timescales, as otherwise your plot might not be displayed. An easy way for achieving this is to use Bokeh's DEFAULT_DATETIME_FORMATS function. For example,
+
+```python
+from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+
+date_formats = DEFAULT_DATETIME_FORMATS()
+date_formats['hours'] = ['%e %b %Y']
+date_formats['days'] = ['%e %b %Y']
+date_formats['months'] = ['%e %b %Y']
+date_formats['years'] = ['%e %b %Y']
+date_formatter = DatetimeTickFormatter(formats=date_formats)
+```
 
 ## Database access
 
@@ -549,7 +562,7 @@ This is for adding a plot to an already existing page.   If a page is needed, se
 
     ```git pull origin master```
 5. In a Python file (`plots.py`, say) in this directory add a function returning your plot. Make sure to annotate your function with a `data_quality` decorator, as described above.
-6. Use the `test_bokeh_plot` in the root folder for testing your plot (see below).
+6. Use the script `test_bokeh_model` in the root folder for testing your plot (see below).
 7. Add the name of the plot (as used in the `name` argument of the `data_quality` decorator) to the `content.txt` file.
 8. Deploy a test server and test the plot.
 
