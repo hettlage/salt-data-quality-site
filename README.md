@@ -166,7 +166,6 @@ The following variable have no infix (but the prefix!) and are required only if 
 | DEPLOY_APP_DIR_NAME | Directory name for the deployed code | Yes | n/a | `my_app` |
 | DEPLOY_WEB_USER | User for running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_WEB_USER_GROUP | Unix group of the user running the Tornado server | No | `www-data` | `www-data` |
-| DEPLOY_USE_BOKEH_SERVER | No | `False` | `False` |
 | DEPLOY_BOKEH_SERVER_PORT | No | 5100 | 5100 |
 
 ## Adding your own environment variables
@@ -601,6 +600,8 @@ In order to add JavaScript to your plot, you may define a callback with CustomJS
 While adding JavaScript in this way is straightforward, it is limited. For example, you cannot perform a new database query. Also, it is arguably much easier to define your callbacks in Python, enjoying full IDE support, rather than to have write a string containing JavaScript code.
 
 These shortcomings fall away if you use a Bokeh server for hosting your plot, as then you you can add (Python) callbacks to your widgets which can update your plot's source data. An example of this is shown below.
+
+**Plots served by the Bokeh server are not password-protected.**
 
 You need to put the file with your plot in the folder `bokeh_server`. All files in this folder (but not in its subfolders) is assumed to contain a plot to be hosted. So you should avoid putting helper files in this folder (although you are perfectly fine to put them in subfolders).
 
