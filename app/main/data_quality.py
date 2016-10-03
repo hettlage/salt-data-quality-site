@@ -7,10 +7,8 @@ from bokeh.model import Model
 from dateutil import parser
 from flask import g, render_template
 
-from app.decorators import stored_query_parameters
+from app.decorators import store_query_parameters, data_quality_items
 from app.main.date_range_form import DateRangeForm
-
-_data_quality_items = dict()
 
 
 def data_quality_item_html(item, caption=None, export_name='item'):
@@ -86,38 +84,10 @@ def data_quality_item(package, name):
 
     """
 
-    return _data_quality_items[package][name]
+    return data_quality_items[package][name]
 
 
-def _register(func, name, **kwargs):
-    """Register a function under a given name.
-
-    The name under which the function is registered must be unique within the function's module.
-
-    Additional keyword arguments are stored as a dictionary along with the function.
-
-    Params:
-    -------
-    func: function
-        Function to store.
-    name: str
-        Name under which to store the function.
-    **kwargs: keyword arguments
-        Information to store along with the function.
-    """
-
-    package_name = func.__module__.rsplit('.', 1)[0]
-    if package_name not in _data_quality_items:
-        _data_quality_items[package_name] = {}
-    d = _data_quality_items[package_name]
-    if name in d:
-        raise Exception('The package {package} contains multiple functions with a data_quality decorator that '
-                        'has the value "{name}" as its name argument.'.format(package=package_name,
-                                                                              name=name))
-    d[name] = (func, kwargs)
-
-
-@stored_query_parameters(names=('start_date', 'end_date'))
+@store_query_parameters(names=('start_date', 'end_date'))
 def default_data_quality_content_for_date_range(package, default_start_date=None, default_end_date=None):
     """Create default data quality content for a date range query.
 

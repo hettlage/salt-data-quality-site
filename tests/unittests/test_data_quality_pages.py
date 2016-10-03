@@ -3,14 +3,14 @@ import json
 from flask import current_app, g, jsonify, request, url_for
 from flask_login import login_user, logout_user
 
-from app.decorators import stored_query_parameters
+from app.decorators import store_query_parameters
 from app.main import main
 from app.main.views import DATA_QUALITY_ROUTE
 from tests.unittests.base import NoAuthBaseTestCase
 
 
 @main.route('/echo-parameters', methods=['GET', 'POST', 'PUT'])
-@stored_query_parameters(names=('a', 'b', 'c', 'd'))
+@store_query_parameters(names=('a', 'b', 'c', 'd'))
 def echo_parameters():
     merged = g.stored_query_parameters.copy()
     merged.update(request.values)

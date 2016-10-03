@@ -3,10 +3,10 @@ import json
 
 from flask import g, request, session
 
-from app.main.data_quality import _register
+data_quality_items = dict()
 
 
-def stored_query_parameters(names):
+def store_query_parameters(names):
     """Decorator for (re)storing query parameters in a cookie.
 
     If a Flask route has this decorator, it will store query parameters in a cookie, so that they are available in a
@@ -27,9 +27,16 @@ def stored_query_parameters(names):
     For example, assume you have a form which asks for a date and then displays the science time for the previous days.
     With Flask-WTF you then could implement along the following lines:
 
+    from dateutil import parser
 
-    @stored_qurery_parameters(names=['end_date'])
+    class DateForm(Form):
+        end_date = DateField('End', validators=[DataRequired()])
+        submit = SubmitField('Query')
+
+    @stored_query_parameters(names=('end_date'))
     def science_times():
+        form = DateForm()
+        form.end_date.data = parser.parse(g.stored_query_parameters['end_date']
         ...
 
     Params:
@@ -38,7 +45,7 @@ def stored_query_parameters(names):
         The names of the query parameters which should be stored and restored.
     """
 
-    def decorator(f):
+    def decorate(f):
         @functools.wraps(f)
         def wrapped(*args, **kwargs):
             # query parameters
@@ -68,7 +75,7 @@ def stored_query_parameters(names):
 
         return wrapped
 
-    return decorator
+    return decorate
 
 
 def data_quality(name, caption, export_name=None, **kwargs):
@@ -100,3 +107,31 @@ def data_quality(name, caption, export_name=None, **kwargs):
 
         return func
     return decorate
+
+
+def _register(func, name, **kwargs):
+    """Register a function under a given name.
+
+    The name under which the function is registered must be unique within the function's module.
+
+    Additional keyword arguments are stored as a dictionary along with the function.
+
+    Params:
+    -------
+    func: function
+        Function to store.
+    name: str
+        Name under which to store the function.
+    **kwargs: keyword arguments
+        Information to store along with the function.
+    """
+
+    package_name = func.__module__.rsplit('.', 1)[0]
+    if package_name not in data_quality_items:
+        data_quality_items[package_name] = {}
+    d = data_quality_items[package_name]
+    if name in d:
+        raise Exception('The package {package} contains multiple functions with a data_quality decorator that '
+                        'has the value "{name}" as its name argument.'.format(package=package_name,
+                                                                              name=name))
+    d[name] = (func, kwargs)
