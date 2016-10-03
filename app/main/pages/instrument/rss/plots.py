@@ -5,7 +5,7 @@ from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
-from app.main.data_quality import data_quality
+from app.decorators import data_quality
 from app.main.data_quality_plots import data_quality_date_plot
 
 
