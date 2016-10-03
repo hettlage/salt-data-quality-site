@@ -1,11 +1,13 @@
-import functools
 import importlib
+import json
 import os
 
 from bokeh.embed import components
 from bokeh.model import Model
-from flask import render_template
+from dateutil import parser
+from flask import g, render_template
 
+from app.decorators import stored_query_parameters
 from app.main.date_range_form import DateRangeForm
 
 _data_quality_items = dict()
@@ -115,6 +117,7 @@ def _register(func, name, **kwargs):
     d[name] = (func, kwargs)
 
 
+@stored_query_parameters(names=('start_date', 'end_date'))
 def default_data_quality_content_for_date_range(package, default_start_date=None, default_end_date=None):
     """Create default data quality content for a date range query.
 
@@ -137,6 +140,14 @@ def default_data_quality_content_for_date_range(package, default_start_date=None
     """
 
     form = DateRangeForm(default_start_date, default_end_date)
+
+    # update form data from stored parameters
+    stored_params = g.stored_query_parameters
+    if 'start_date' in stored_params:
+        form.start_date.data = parser.parse(stored_params['start_date'])
+    if 'end_date' in stored_params:
+        form.end_date.data = parser.parse(stored_params['end_date'])
+
     if form.validate():
         start_date = form.start_date.data
         end_date = form.end_date.data
