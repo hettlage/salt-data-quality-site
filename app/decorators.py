@@ -1,4 +1,74 @@
+import functools
+import json
+
+from flask import g, request, session
+
 from app.main.data_quality import _register
+
+
+def stored_query_parameters(names):
+    """Decorator for (re)storing query parameters in a cookie.
+
+    If a Flask route has this decorator, it will store query parameters in a cookie, so that they are available in a
+    subsequent call as default values. The following procedure is followed.
+
+    1. POST, PUT and GET query parameters ("PPGP") are collected.
+    2. The parameters stored in the user session item 'qp_<route>' ("UP") are collected.
+    3. Both the PPGP and UP are checked for the list of parameters with the given names. If a parameter is defined both
+       in the PPGP and the UP, the value from the PPGP is taken.
+    4. The set of parameter values from the previous step is stored in the user session item qp_<route> and also as a
+       dictionary g.stored_query_parameters, where g is Flask's g object.
+
+    The user session is valid for the current browser session only.
+
+    The intention of this decorator is to preserve a user choice such as a date range even if the user navigates away
+    from a page and then back to it.
+
+    For example, assume you have a form which asks for a date and then displays the science time for the previous days.
+    With Flask-WTF you then could implement along the following lines:
+
+
+    @stored_qurery_parameters(names=['end_date'])
+    def science_times():
+        ...
+
+    Params:
+    -------
+    names: list of str
+        The names of the query parameters which should be stored and restored.
+    """
+
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapped(*args, **kwargs):
+            # query parameters
+            ppgp = request.values.to_dict()
+
+            # parameters stored in the cookie
+            session_item_name = 'qp_{path}'.format(path=request.path)
+            session_item_value = session.get(session_item_name)
+            if session_item_value:
+                cp = json.loads(session_item_value)
+            else:
+                cp = {}
+
+            # merge the parameters
+            merged = cp.copy()
+            merged.update(ppgp)
+
+            # store the available parameters
+            params = {name:merged[name] for name in names if name in merged}
+            g.stored_query_parameters = params
+
+            # make sure the parameters are remembered
+            session[session_item_name] = json.dumps(params)
+
+            r = f(*args, **kwargs)
+            return r
+
+        return wrapped
+
+    return decorator
 
 
 def data_quality(name, caption, export_name=None, **kwargs):
