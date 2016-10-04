@@ -167,7 +167,7 @@ def update_webassets():
          'fi'.format(webassets_cache=webassets_cache))
 
     # create bundles (must be run as root, as the deploy user doesn't own the error log)
-    sudo('cd {site_dir}; export FLASK_APP=run_server.py; export FLASK_CONFIG=production; venv/bin/flask assets build'
+    sudo('cd {site_dir}; export FLASK_APP=site_app.py; export FLASK_CONFIG=production; venv/bin/flask assets build'
          .format(site_dir=site_dir))
 
     # make deploy user owner of the bundle directory
@@ -245,9 +245,6 @@ def deploy(with_setting_up=False):
             '    git clone {repository} {site_dir}\n'
             'fi'.format(repository=repository, site_dir=site_dir))
 
-        # update the Git repository
-        run('cd {site_dir}; git pull'.format(site_dir=site_dir))
-
         # create environment variable prefix file
         run('cd {site_dir}; echo {prefix} > env_var_prefix'.format(prefix=prefix, site_dir=site_dir))
 
@@ -257,6 +254,9 @@ def deploy(with_setting_up=False):
             'then\n'
             '    python3 -m virtualenv venv\n'
             'fi'.format(site_dir=site_dir))
+
+    # update the Git repository
+    run('cd {site_dir}; git pull'.format(site_dir=site_dir))
 
     # install Python packages
     update_python_packages()
