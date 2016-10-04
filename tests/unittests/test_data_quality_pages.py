@@ -118,6 +118,3 @@ class DataQualityPagesTestCase(NoAuthBaseTestCase):
         response = self.client.get('/echo-parameters')
         self.assertEquals(200, response.status_code)
         self.assertEquals(merged, json.loads(response.data.decode('utf-8')))
-
-
-

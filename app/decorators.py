@@ -64,7 +64,7 @@ def store_query_parameters(names):
             merged.update(ppgp)
 
             # store the available parameters
-            params = {name:merged[name] for name in names if name in merged}
+            params = {name: merged[name] for name in names if name in merged}
             g.stored_query_parameters = params
 
             # make sure the parameters are remembered
