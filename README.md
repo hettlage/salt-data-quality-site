@@ -28,25 +28,47 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Open the file `environment.yml` and replace the environment name with a more suitable one. Save the file and create the environment by executing
-
-```bash
-conda env create -f environment.yml
-```
-
 Define the required environment variables, as set out in the section *Environment variables* below. (If you are using an IDE, you might define these in your running configuration.)
 
-You can then run the following commands for launching the (development) server or running the tests.
+Once you have installed everything, run the following commands for launching the server or running the tests.
 
 | Command | Purpose |
 | --- | --- |
-| `python manage.py runserver` | Launch the server |
+| `flask run` | Launch the server |
 | `./run_tests.sh` | Run the tests |
 
-You might have to make the script `./run_tests.sh` executable,
+These commands should be executed in the root directory of the site.
+
+In order to run the server, two environment variables need to be set:
+
+| Environment variable | Description | Value |
+| FLASK_APP | Path to the Flask app file | `site_app` |
+| FLASK_CONFIG | Configuration to use (`development`, `testing` or `production`) | 
+
+So in order to launch the site with the development configuration you would execute
 
 ```bash
-chmod u+x run_tests.sh
+export FLASK_APP=site_app.py
+export FLASK_CONFIG=development
+flask run
+```
+
+Obviously it would be a bit tedious to have to type the export commands over and over again. You may avoid this by adding them to the activation script of the virtual environment, `venv/bin/activate`
+
+```bash
+# set Flask variables
+export FLASK_APP=site_app.py
+export FLASK_CONFIG=development
+```
+
+and unsetting them in the script's deactivate function
+
+```bash
+# unset Flask variables
+if [ ! "$1" = "nondestructive" ] ; then
+    unset FLASK_APP
+    unset FLASK_CONFIG
+fi
 ```
 
 ### On a remote server
@@ -136,7 +158,7 @@ Most of the environment variables must be defined for various configurations, wh
 | testing | `TEST_` |
 | production | no prefix |
 
-The script `run_tests.sh` uses the testing configuration. If you launch the server with the `manage.py` script, the development configuration is used. Code deployed to a remote server uses the production configuration.
+The script `run_tests.sh` uses the testing configuration. Code deployed to a remote server uses the production configuration. Otherwise the configuration specified by the `FLASK_APP_CONFIG` environment variable.
 
 For example, if the content of the file `env_var_prefix` is `MY_APP` an environment variable name for the development configuration could be `MY_APP_DEV_DATABASE_URI`.
 
@@ -156,7 +178,7 @@ The following variables are required for all modes:
 | `SECRET_KEY` | Key for password seeding | Yes | n/a | `s89ywnke56` |
 | `SSL_ENABLED` | Whether SSL should be disabled | No | 0 | 0 |
 
-The following variable have no infix (but the prefix!) and are required only if you run the commands for setting up a remote server or deploying the site.
+The following variables have no infix (but the prefix!) and are required only if you run the commands for setting up a remote server or deploying the site, or if you perform a database migration.
 
 | Environment variable | Description | Required | Default | Example |
 | --- | --- |
@@ -169,6 +191,15 @@ The following variable have no infix (but the prefix!) and are required only if 
 | DEPLOY_WEB_USER | User for running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_WEB_USER_GROUP | Unix group of the user running the Tornado server | No | `www-data` | `www-data` |
 | DEPLOY_BOKEH_SERVER_PORT | No | 5100 | 5100 |
+| DB_MIGRATION_TOOL | Tool to use for database migration | No | `None` | `Flask-Migrate` |
+| DB_MIGRATION_SQL_DIR | Directory containing the migration SQL scripts | no | `db_migrations` | `db_migrations` |
+| DB_MIGRATION_FLYWAY_COMMAND | Command for running flyway | No | `flyway` | `/path/to/flyway` |
+
+You can disable logging as well:
+
+| Environment variable | Description | Required | Default | Example |
+| --- | --- |
+| WITH_LOGGING | Whether to log errors (1) or not (0) | No | 1 | 1 |
 
 ## Adding your own environment variables
 
