@@ -341,7 +341,7 @@ def days_between():
     if 'end_date' in stored_params:
         form.end_date.data = parser.parse(stored_params['end_date'])
 
-    if form.validate_on_submit():
+    if form.validate():
         start_date = form.start_date.data
         end_date = form.end_date.data
         days_diff = (end_date - start_date).days
@@ -641,18 +641,19 @@ This is for adding a plot to an already existing page.   If a page is needed, se
 8. Deploy a test server and test the plot.
 
     a. In a new terminal, log in and move into the project directory and start up the server
+    
+    ```
+    cd saltstatsdev.cape.saao.ac.za
+    source venv/bin/activate
+    flask run -p 81 -h 0.0.0.0
+    ```
 
-        ```
-        cd saltstatsdev.cape.saao.ac.za
-        source venv/bin/activate
-        python manage.py runserver -p 81 -h 0.0.0.0
-        ```
     b. On a browser on your own machine, you should now be able to navigate to http://saltstatsdev.cape.saao.ac.za:81/ and see the site.
     
-    c.  Navigate to the page you have created and you should be able to now see the plot added
-to your site.
+    c.  Navigate to the page you have created and you should be able to now see the plot added to your site.
 
-    d.  If there is an error or the plot does not display, check the `/home/deploy/errors.log` file for details.  Once the code has been updated, reload the page to see if it will display without errors.   
+    d.  If there is an error or the plot does not display, check the `/home/deploy/errors.log` file for details.  Once the code has been updated, reload the page to see if it will display without errors.
+    
 8. Once the plot works, commit the code to github. 
 9. Alert Christian to restart the server so that the new plot is displayed on the live site. 
 
