@@ -654,7 +654,7 @@ Your new page is now accessible at `/data-quality/general/downtime`.
 
 ## Adding a Plot
 
-This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian.    
+This is for adding a plot to an already existing page.   If a page is needed, speak to Christian for help with  [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page).  For log in details, contact Christian.    
 
 1. Log into the development machine as user deploy. For testing you'll need an X11 connection, so use the `-X` flag with `ssh`.
 2. Move into the directory for the page you want to add a plot to
