@@ -131,6 +131,7 @@ def hrdet_arc_wave_plot(start_date, end_date):
                x_axis_label='Date',
                y_axis_label=y_axis_label,
                x_axis_type='datetime')
+    print(df['UTStart'], df['x'])
     p.scatter(source=source, x='UTStart', y=column)
 
     p.xaxis[0].formatter = date_formatter
