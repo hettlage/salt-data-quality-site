@@ -654,7 +654,7 @@ Your new page is now accessible at `/data-quality/general/downtime`.
 
 ## Adding a Plot
 
-This is for adding a plot to an already existing page.   If a page is needed, see [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page) or contact Christian.  For log in details, contact Christian.    
+This is for adding a plot to an already existing page.   If a page is needed, speak to Christian for help with  [adding a data quality page](https://github.com/saltastro/salt-data-quality-site#adding-a-data-quality-page).  For log in details, contact Christian.    
 
 1. Log into the development machine as user deploy. For testing you'll need an X11 connection, so use the `-X` flag with `ssh`.
 2. Move into the directory for the page you want to add a plot to
@@ -676,7 +676,7 @@ This is for adding a plot to an already existing page.   If a page is needed, se
     ```
     cd saltstatsdev.cape.saao.ac.za
     source venv/bin/activate
-    flask run -p 81 -h 0.0.0.0
+    sudo -E venv/bin/flask run -p 81 -h 0.0.0.0
     ```
 
     b. On a browser on your own machine, you should now be able to navigate to http://saltstatsdev.cape.saao.ac.za:81/ and see the site.
@@ -699,7 +699,7 @@ source venv/bin/activate
 You can then run the script as follows,
 
 ```bash
-python test_bokeh_model.py path/to/your/plots/file plot_function_name [plot_function_arg1 plot_function_arg2 ...]
+sudo -E venv/bin/python python test_bokeh_model.py path/to/your/plots/file plot_function_name [plot_function_arg1 plot_function_arg2 ...]
 ```
 
 The path is that of the Python file containing your plot function, the function name is the name of your function (*not* the name attribute of its `data_quality` decorator), and the remaining arguments are passed to your function.
@@ -707,7 +707,7 @@ The path is that of the Python file containing your plot function, the function 
 For example, a call to the script might be
 
 ```bash
-python test_bokeh.py app/main/pages/examples/example2/plots.py weather_downtime_plot 2016-06-01 2016-06-19
+sudo -E venv/bin/python test_bokeh.py app/main/pages/examples/example2/plots.py weather_downtime_plot 2016-06-01 2016-06-19
 ```
 
 ### Interactive plots
