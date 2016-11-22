@@ -53,7 +53,7 @@ if not module_file.lower().endswith('.py'):
     error('The module filename must end with ".py".')
 
 # find the path of the module file relative to the base directory of the project
-module_path = os.path.relpath(module_file, os.path.commonpath([module_file, this_file]))
+module_path = os.path.relpath(module_file, os.path.commonprefix([module_file, this_file]))
 
 # convert the path into a module name (remove ".py" and replace separators with dots)
 module = module_path[:-3].replace(os.path.sep, '.')
