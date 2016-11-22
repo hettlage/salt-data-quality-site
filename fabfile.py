@@ -132,7 +132,7 @@ def update_log_dir():
     The directory for the log files is created (if it doesn't exist yet), access is granted to the user only, and
     ownership of this file is transferred to the web user.
 
-    If the directory exists already, it is checked that it is actually owned by
+    If the directory exists already, it is checked that it is actually owned by the web user.
     """
 
     settings = Config.settings('production')
