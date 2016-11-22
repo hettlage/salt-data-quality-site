@@ -34,6 +34,7 @@ def hrdet_bias_plot(start_date, end_date):
     y_axis_label = 'Bias Background Mean (e)'
     return data_quality_date_plot(start_date, end_date, title, column, table, logic=logic, y_axis_label=y_axis_label)
 
+
 @data_quality(name='hrdet_vacuum_temp', caption='HRS HRDET Vacuum Temperature')
 def hrdet_vacuum_temp_plot(start_date, end_date):
     """Return a <div> element with a HRS vacuum temperature plot.
@@ -55,9 +56,9 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
     title = "HRDET Vacuum Temp"
     y_axis_label = 'Vacuum Temp'
 
-    #creates your query
-    table='FitsHeaderHrs'
-    column='TEM_VAC'
+    # creates your query
+    table = 'FitsHeaderHrs'
+    column = 'TEM_VAC'
     logic = " and FileName like 'R%%'"
     sql = "select UTStart, {column} from {table} join FileData using (FileData_Id) " \
           "       where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}"\
@@ -66,7 +67,7 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
 
-    #creates your plot
+    # creates your plot
     date_formats = DEFAULT_DATETIME_FORMATS()
     date_formats['hours'] = ['%e %b %Y']
     date_formats['days'] = ['%e %b %Y']
@@ -83,6 +84,7 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
     p.xaxis[0].formatter = date_formatter
 
     return p
+
 
 @data_quality(name='hrdet_arc_wave', caption='HRS Arc stability')
 def hrdet_arc_wave_plot(start_date, end_date):
@@ -105,12 +107,13 @@ def hrdet_arc_wave_plot(start_date, end_date):
     title = "HRDET Arc Stability"
     y_axis_label = 'Pixel Position'
 
-    #creates your query
-    table='DQ_HrsArc'
-    column='x'
-    obsmode='LOW RESOLUTION'
-    wavelength=6483.08
-    logic = " and FileName like 'R%%' and OBSMODE like '{obsmode}' and wavelength={wavelength}".format(obsmode=obsmode, wavelength=wavelength)
+    # creates your query
+    table = 'DQ_HrsArc'
+    column = 'x'
+    obsmode = 'LOW RESOLUTION'
+    wavelength = 6483.08
+    logic = " and FileName like 'R%%' and OBSMODE like '{obsmode}' and wavelength={wavelength}"\
+        .format(obsmode=obsmode, wavelength=wavelength)
     sql = "select UTStart, {column} from {table} join FileData using (FileData_Id) " \
           "       where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}"\
         .format(column=column, start_date=start_date, end_date=end_date,
@@ -119,7 +122,7 @@ def hrdet_arc_wave_plot(start_date, end_date):
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
 
-    #creates your plot
+    # creates your plot
     date_formats = DEFAULT_DATETIME_FORMATS()
     date_formats['hours'] = ['%e %b %Y']
     date_formats['days'] = ['%e %b %Y']

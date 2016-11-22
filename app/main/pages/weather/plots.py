@@ -50,10 +50,11 @@ def _downtime_plot(downtime_column, title, start_date, end_date):
     bokeh.model.Model:
         The downtime plot.
     """
-    start_date='2016-05-01'
-    end_date='2016-06-01'
+    start_date = '2016-05-01'
+    end_date = '2016-06-01'
     sql = 'SELECT Weather_Time, {downtime_column} FROM Weather' \
-          '       WHERE Weather_Time >= \'{start_date}\' AND Waether_Time < \'{end_date}\' AND {downtime_column} IS NOT NULL' \
+          '       WHERE Weather_Time >= \'{start_date}\' AND Waether_Time < \'{end_date}\'' \
+          '                                              AND {downtime_column} IS NOT NULL' \
         .format(start_date=start_date, end_date=end_date, downtime_column=downtime_column)
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
