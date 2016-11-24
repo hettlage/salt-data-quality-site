@@ -136,6 +136,7 @@ def update_log_dir():
     """
 
     settings = Config.settings('production')
+    log_file = os.path.abspath(settings['logging_file_base_path'])
     log_dir = os.path.abspath(os.path.join(settings['logging_file_base_path'], os.path.pardir))
     sudo('if [[ ! -d {log_dir} ]]\n'
          'then\n'
@@ -150,7 +151,19 @@ def update_log_dir():
          'fi'.format(log_dir=log_dir,
                      web_user=web_user,
                      web_user_group=web_user_group))
-
+    sudo('if [[ ! -e {log_file} ]]\n'
+         'then\n'
+         '    touch {log_file}\n'
+         '    chmod 700 {log_file}\n'
+         '    chown {web_user}:{web_user_group} {log_file}\n'
+         'elif [ `ls -l {log_file} | awk \'{{print $3}}\'` != "{web_user}" ]\n'
+         'then\n'
+         '    echo "The log file {log_file} isn\'t owned by the web user {{web_user}}."\n'
+         '    sleep 5\n'
+         '    exit 1\n'
+         'fi'.format(log_file=log_file,
+                     web_user=web_user,
+                     web_user_group=web_user_group))
 
 def update_webassets():
     # remove bundle and cache directories
