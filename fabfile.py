@@ -291,6 +291,10 @@ def deploy(with_setting_up=False):
     # setup Nginx
     update_nginx_conf()
 
+    # yes, all should be working now - but it seems that existing Supervisor jobs might not have been killed
+    # hence we rather do a full reboot..
+    reboot()
+
 
 def setup():
     deploy(with_setting_up=True)
