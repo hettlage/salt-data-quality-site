@@ -2,6 +2,10 @@
 
 A website for displaying data quality measurements done for the Southern African Large Telescope (SALT).
 
+## If you have no time...
+
+If you are pressed for time, you should have a look at the section on [what to do if you have no time](docs/no-time.md).
+
 ## If you are an astronomer adding a plot to the site...
 
 In most cases, you just need to add a [Bokeh](http://bokeh.pydata.org/) plot to an already existing page. This is covered by the section on [adding a plot](docs/adding-a-plot.md).
