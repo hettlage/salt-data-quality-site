@@ -133,7 +133,7 @@ def rss_bias_plot(start_date, end_date):
     return data_quality_date_plot(start_date, end_date, title, column, table, logic=logic, y_axis_label=y_axis_label)
 
 # plot for RSS throughput
-@data_quality(name='rss_throughput', caption='RSS Throughput')
+@data_quality(name='rss_throughput', caption=' ')
 def rss_throughput_plot(start_date, end_date):
     """Return a <div> element with a plot displaying the Rss throughput.
 
@@ -221,15 +221,14 @@ def _throughput_plot(throughput_column, title, start_date, end_date):
     )
 
     p = figure(title=title,
-               x_axis_label='Time',
-               y_axis_label="RSS throughput",
+               x_axis_label='Date',
+               y_axis_label="RSS Throughput",
                x_axis_type='datetime',
                tools=[tool_list, _hover])
     p.scatter(source=source, x='Date', y='{throughput_column}'.format(throughput_column=throughput_column),
               color='blue', fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
-    p.xaxis.major_label_orientation = pi / 4
 
     script, div = components(p)
 

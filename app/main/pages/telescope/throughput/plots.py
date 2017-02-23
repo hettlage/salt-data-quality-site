@@ -11,7 +11,7 @@ from app.decorators import data_quality
 from math import pi
 
 
-@data_quality(name='telescope_throughput', caption=' Telescope Throughput')
+@data_quality(name='telescope_throughput', caption='')
 def telescope_throughput_plot(start_date, end_date):
     """Return a <div> element with a telescope throughput plot.
 
@@ -99,8 +99,8 @@ def _throughput_plot(throughput_column, title, start_date, end_date):
     )
 
     p = figure(title=title,
-               x_axis_label='Time',
-               y_axis_label="telescope throughput",
+               x_axis_label='Date',
+               y_axis_label="Telescope Throughput",
                x_axis_type='datetime',
                tools=[tool_list, _hover])
     p.scatter(source=source, x='Date', y='{throughput_column}'.format(throughput_column=throughput_column),
