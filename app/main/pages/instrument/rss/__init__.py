@@ -9,5 +9,5 @@ def title():
 
 def content():
     return default_data_quality_content_for_date_range(__package__,
-                                                       datetime.date.today() - datetime.timedelta(days=180),
+                                                       datetime.date.today() - datetime.timedelta(days=1461),
                                                        datetime.date.today())
