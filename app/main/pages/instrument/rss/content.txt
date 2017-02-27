@@ -1,4 +1,9 @@
 rss_bias
 rss_straylight_zero
 rss_straylight_ninety
+rss_arcintensity_neon
+rss_arcintensity_argon
+rss_arcintensity_xenon
+rss_arcintensity_copperargon
+rss_arcintensity_thoriumargon
 rss_throughput
