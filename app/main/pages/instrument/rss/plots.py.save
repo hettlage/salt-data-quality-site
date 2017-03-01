@@ -192,12 +192,10 @@ def _rss_arc_intensity(articulation, lamp, start_date, end_date):
     #title="Fun"
     y_axis_label = 'Average Counts'
 
-    # creates your query
+    # 222creates your query
     table = 'DQ_RssArcIntensity'
     # query only selects rows with camang that are specified by articulation
-    sql = "select UTStart, mean_z1/ExpTime AS mean_z1, mean_z2/ExpTime AS mean_z2, " \
-	  "     mean_z3/ExpTime AS mean_z3, mean_z4/ExpTime AS mean_z4," \
-          "     mean_z5/ExpTime AS mean_z5, mean_z6/ExpTime AS mean_z6 from DQ_RssArcIntensity" \
+    sql = "select UTStart,mean_z1,mean_z2,mean_z3,mean_z4,mean_z5,mean_z6 from DQ_RssArcIntensity" \
           "       join FileData using (FileData_Id)" \
           "       join FitsHeaderRss using (FileData_Id)" \
           "       join FitsHeaderImage using (FileData_Id)" \
