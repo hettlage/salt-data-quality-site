@@ -43,14 +43,22 @@
                         <li><a href="/data-quality/telescope/night">Night</a></li>
                         <li><a href="/data-quality/telescope/week">Week</a></li>
                         <li><a href="/data-quality/telescope/semester">Semester</a></li>
-			<li><a href="/data-quality/telescope/throughput">Throughput</a></li>
+			            <li><a href="/data-quality/telescope/throughput">Throughput</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Instrument</a>
                     <ul class="dropdown-menu">
                         <li><a href="/data-quality/instrument/scam">SCAM</a></li>
-                        <li><a href="/data-quality/instrument/rss">RSS</a></li>
+                        <li  class="dropdown-submenu">
+                            <a class="submenu"  href="#">RSS <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/data-quality/instrument/rss/bias">Bias Levels</a></li>
+                                <li><a href="/data-quality/instrument/rss/straylight">Straylight</a></li>
+                                <li><a href="/data-quality/instrument/rss/intensity">Arc Intensity</a></li>
+                                <li><a href="/data-quality/instrument/rss/throughput">Throughput</a></li>
+                            </ul>
+                        </li>
                         <li><a href="/data-quality/instrument/hrdet">HRS Red</a></li>
                         <li><a href="/data-quality/instrument/hbdet">HRS Blue</a></li>
                         <li><a href="/data-quality/instrument/bvit">BVIT</a></li>
