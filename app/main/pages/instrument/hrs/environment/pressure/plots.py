@@ -10,8 +10,8 @@ from app.decorators import data_quality
 from app.main.data_quality_plots import data_quality_date_plot
 
 
-@data_quality(name='hrdet_vacuum_temp', caption='HRS HRDET Vacuum Temperature')
-def hrdet_vacuum_temp_plot(start_date, end_date):
+@data_quality(name='hbdet_vacuum_temp', caption='HRS HBDET Vacuum Temperature')
+def hbdet_vacuum_temp_plot(start_date, end_date):
     """Return a <div> element with a HRS vacuum temperature plot.
 
     The plot shows the HRS vacuum temperature for the period between start_date (inclusive) and end_date (exclusive).
@@ -28,13 +28,13 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
     str:
         A <div> element with the weather downtime plot.
     """
-    title = "HRDET Vacuum Temp"
+    title = "HBDET Vacuum Temp"
     y_axis_label = 'Vacuum Temp'
 
     # creates your query
     table = 'FitsHeaderHrs'
     column = 'TEM_VAC'
-    logic = " and FileName like 'R%%'"
+    logic = " and FileName like 'H%%'"
     sql = "select UTStart, {column}, FileName, CONVERT(UTStart,char) AS Time " \
           "     from {table} join FileData using (FileData_Id) " \
           "         where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}"\
@@ -46,21 +46,21 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
     tool_list = "pan,reset,save,wheel_zoom, box_zoom"
     _hover = HoverTool(
         tooltips="""
+                    <div>
                         <div>
-                            <div>
-                                <span style="font-size: 15px; font-weight: bold;">Date: </span>
-                                <span style="font-size: 15px;"> @Time</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 15px; font-weight: bold;">Pixel Position: </span>
-                                <span style="font-size: 15px;"> @TEM_VAC</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 15px; font-weight: bold;">Filename: </span>
-                                <span style="font-size: 15px;"> @FileName</span>
-                            </div>
+                            <span style="font-size: 15px; font-weight: bold;">Date: </span>
+                            <span style="font-size: 15px;"> @Time</span>
                         </div>
-                        """
+                        <div>
+                            <span style="font-size: 15px; font-weight: bold;">Pixel Position: </span>
+                            <span style="font-size: 15px;"> @TEM_VAC</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 15px; font-weight: bold;">Filename: </span>
+                            <span style="font-size: 15px;"> @FileName</span>
+                        </div>
+                    </div>
+                    """
     )
 
     # creates your plot
@@ -76,7 +76,7 @@ def hrdet_vacuum_temp_plot(start_date, end_date):
                y_axis_label=y_axis_label,
                x_axis_type='datetime',
                tools=[tool_list, _hover])
-    p.scatter(source=source, x='UTStart', y=column, color='red', fill_alpha=0.2, size=10)
+    p.scatter(source=source, x='UTStart', y=column, color='blue', fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
 

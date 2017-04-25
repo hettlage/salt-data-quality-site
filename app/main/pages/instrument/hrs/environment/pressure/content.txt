@@ -1,0 +1,11 @@
+ccd_temp
+temp_xcam
+temp_air
+temp_vac
+temp_rmir
+temp_coll
+temp_ech
+temp_ob
+temp_iob
+
+hbdet_vacuum_temp
