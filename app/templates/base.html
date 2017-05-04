@@ -26,91 +26,82 @@
 {% block navbar %}
 <div class="navbar navbar-inverse" role="navigation">
     <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">SALT Data Quality</a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Telescope</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/data-quality/telescope/night">Night</a></li>
-                        <li><a href="/data-quality/telescope/week">Week</a></li>
-                        <li><a href="/data-quality/telescope/semester">Semester</a></li>
-			            <li><a href="/data-quality/telescope/throughput">Throughput</a></li>
+    <nav id="primary-nav-wrap">
+        <ul class="nav navbar-nav">
+            <div  class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <li class="main-nav"><a class="navbar-brand main-nav" href="{{ url_for('main.index') }}">SALT Data Quality</a></li>
+            </div>
+            <li class="main-nav"><a class="main-nav" href="#">Telescope</a>
+                <ul>
+                    <li><a href="/data-quality/telescope/night">Night</a></li>
+                    <li><a href="/data-quality/telescope/week">Week</a></li>
+                    <li><a href="/data-quality/telescope/semester">Semester</a></li>
+                    <li><a href="/data-quality/telescope/throughput">Throughput</a></li>
+                </ul>
+            </li>
+            <li class="main-nav"><a  class="main-nav" href="#">Instrument</a>
+                <ul>
+                <li><a href="/data-quality/instrument/scam">SCAM</a></li>
+                <li><a href="#">RSS         <span class="caret"></span></a>
+                    <ul>
+                        <li><a href="/data-quality/instrument/rss/bias">Bias Levels</a></li>
+                        <li><a href="/data-quality/instrument/rss/straylight">Straylight</a></li>
+                        <li><a href="/data-quality/instrument/rss/intensity">Arc Intensity</a></li>
+                        <li><a href="/data-quality/instrument/rss/throughput">Throughput</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Instrument</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/data-quality/instrument/scam">SCAM</a></li>
+                    <li><a href="#" aria-expanded="true">HRS         <span class="caret"></span></a>
+                        <ul>
+                            <li><a>Blue        <span class="caret"></span></a>
+                                <ul>
+                                    <li><a href="/data-quality/instrument/hrs/blue/arc">Arc Wave</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/blue/bias">Bias Levels</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/blue/flats">Flats</a></li>
+                                </ul>
+                            </li>
+                            <li><a>Red         <span class="caret"></span></a>
+                                <ul>
+                                    <li><a href="/data-quality/instrument/hrs/red/arc">Arc Wave</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/red/bias">Bias Levels</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/red/flats">Flats</a></li>
+                                </ul>
+                            </li>
+                            <li><a>Environment <span class="caret"></span></a>
+                                <ul>
+                                    <li><a href="/data-quality/instrument/hrs/environment/temperature">Temperature</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/environment/pressure">Pressure</a></li>
+                                    <li><a href="/data-quality/instrument/hrs/environment/focus">Focus</a></li>
+                               </ul>
+                           </li>
+                       </ul>
 
-                        <li class="dropdown-submenu">
-                            <a class="submenu"  href="#">RSS <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="/data-quality/instrument/rss/bias">Bias Levels</a></li>
-                                <li><a href="/data-quality/instrument/rss/straylight">Straylight</a></li>
-                                <li><a href="/data-quality/instrument/rss/intensity">Arc Intensity</a></li>
-                                <li><a href="/data-quality/instrument/rss/throughput">Throughput</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown-submenu">
-                            <a class="submenu"  href="#">HRS <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-submenu">
-                                    <a class="submenu"  href="#">Blue <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="/data-quality/instrument/hrs/blue/arc">Arc Wave</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/blue/bias">Bias Levels</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/blue/flats">Flats</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="submenu"  href="#">Red <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="/data-quality/instrument/hrs/red/arc">Arc Wave</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/red/bias">Bias Levels</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/red/flats">Flats</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="submenu"  href="/data-quality/instrument/">Environment
-                                        <span class="caret"></span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="/data-quality/instrument/hrs/environment/temperature">Temperature</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/environment/pressure">Pressure</a></li>
-                                        <li><a href="/data-quality/instrument/hrs/environment/focus">Focus</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="/data-quality/instrument/bvit">BVIT</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Proposal</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/data-quality/proposal/phase1">Phase 1</a></li>
-                        <li><a href="/data-quality/proposal/phase2">Phase 2</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
+                   </li>
+                   <li><a href="/data-quality/instrument/bvit">BVIT</a></li>
+                </ul>
+            </li>
+            <li class="main-nav"><a  class="main-nav" href="#">Proposal</a>
+                <ul>
+                    <li><a href="/data-quality/proposal/phase1">Phase 1 <span class="triangle"></span></a></li>
+                    <li><a href="/data-quality/proposal/phase2">Phase 2</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                <li class="main-nav"><a class="main-nav" href="{{ url_for('auth.logout') }}">Log Out</a></li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                <li class="main-nav"><a class="main-nav" href="{{ url_for('auth.login') }}">Log In</a></li>
                 {% endif %}
             </ul>
-        </div>
-    </div>
+    </nav>
+</div>
+
 </div>
 {% endblock %}
 
