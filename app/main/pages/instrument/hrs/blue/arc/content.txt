@@ -1,1 +1,3 @@
-hbdet_arc_wave
+high_resolution
+medium_resolution
+low_resolution
