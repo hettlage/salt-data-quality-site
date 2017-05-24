@@ -63,7 +63,10 @@ def hbdet_arc_wave_plot(start_date, end_date):
                 </div>
                 """
     )
-    print(source)
+    from bokeh.palettes import Spectral5
+    COLORS = Spectral5
+    groups = pd.qcut(df["HrsOrder"].values, len(COLORS))
+    c = [COLORS[xx] for xx in groups.codes]
 
     # creates your plot
     date_formats = DEFAULT_DATETIME_FORMATS()
@@ -78,7 +81,7 @@ def hbdet_arc_wave_plot(start_date, end_date):
                y_axis_label=y_axis_label,
                x_axis_type='datetime',
                tools=[tool_list, _hover])
-    p.scatter(source=source, x='UTStart', y='avg', color="HrsOrder", fill_alpha=0.2, size=10)
+    p.scatter(source=source, x='UTStart', y='avg', color=c, fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
 
