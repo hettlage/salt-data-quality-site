@@ -1,6 +1,13 @@
+import datetime
+
+from app.main.data_quality import default_data_quality_content_for_date_range
+
+
 def title():
-    return ''
+    return 'Flatfield Background level'
 
 
 def content():
-    return 'This is a placeholder for plots displaying statistics for Flats'
+    return default_data_quality_content_for_date_range(__package__,
+                                                       datetime.date.today() - datetime.timedelta(days=731),
+                                                       datetime.date.today())

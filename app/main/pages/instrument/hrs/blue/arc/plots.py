@@ -2,17 +2,40 @@ import pandas as pd
 
 from bokeh.models import HoverTool
 from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+from bokeh.palettes import Spectral11
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
 from app.decorators import data_quality
 
 
-@data_quality(name='high_resolution', caption='')
-def hbdet_arc_wave_plot(start_date, end_date):
-    """Return a <div> element with a HRS arc stability plot.
+def get_source(start_date, end_date, obsmode):
+    filename = 'H%%'
+    logic = " and OBSMODE='{obsmode}'  " \
+            "   and DeltaX > -99 " \
+            "   and FileName like '{filename}' " \
+            "   and Object = 1  group by UTStart, HrsOrder" \
+        .format(filename=filename, obsmode=obsmode)
+    sql = "Select UTStart, HrsOrder, AVG(DeltaX) as avg, CONVERT(UTStart,char) AS Time " \
+          "     from DQ_HrsArc join FileData using (FileData_Id) " \
+          "     where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}" \
+        .format(start_date=start_date, end_date=end_date, logic=logic)
 
-    The plot shows the HRS wavelenght as a function of pixel position for a set of time
+    df = pd.read_sql(sql, db.engine)
+
+    groups = pd.qcut(df["HrsOrder"].values, len(Spectral11))
+    colors = [Spectral11[xx] for xx in groups.codes]
+    df['colors'] = colors
+
+    source = ColumnDataSource(df)
+    return source
+
+
+@data_quality(name='high_resolution', caption='')
+def hrs_high_resolution_plot(start_date, end_date):
+    """Return a <div> element with the High resolution AVG(DeltaX) vs time.
+
+    The plot shows the AVG(DeltaX) for a set of time
 
     Params:
     -------
@@ -24,25 +47,11 @@ def hbdet_arc_wave_plot(start_date, end_date):
     Return:
     -------
     str:
-        A <div> element with the weather downtime plot.
+        A <div> element with the High resolution AVG(DeltaX) vs time.
     """
-    title = "High Resolution"
-    y_axis_label = 'AVG(DeltaX)'
 
-    # creates your query
     obsmode = 'HIGH RESOLUTION'
-    filename = 'H%%'
-    logic = " and OBSMODE='{obsmode}'  and DeltaX > -99 and FileName like '{filename}' " \
-            "   and OBSMODE like '{obsmode}' and Object=1 group by UTStart, HrsOrder"\
-        .format(filename=filename, obsmode=obsmode)
-
-    sql = "Select UTStart, HrsOrder, AVG(DeltaX) as avg, CONVERT(UTStart,char) AS Time " \
-          "     from DQ_HrsArc join FileData using (FileData_Id) " \
-          "     where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}" \
-        .format(start_date=start_date, end_date=end_date, obsmode=obsmode, logic=logic)
-
-    df = pd.read_sql(sql, db.engine)
-    source = ColumnDataSource(df)
+    source = get_source(start_date, end_date, obsmode)
 
     tool_list = "pan,reset,save,wheel_zoom, box_zoom"
     _hover = HoverTool(
@@ -58,7 +67,7 @@ def hbdet_arc_wave_plot(start_date, end_date):
                     </div>
                     <div>
                         <span style="font-size: 15px; font-weight: bold;">HrsOrder: </span>
-                        <span style="font-size: 15px;"> @Hr</span>
+                        <span style="font-size: 15px;"> @HrsOrder</span>
                     </div>
                 </div>
                 """
@@ -72,12 +81,12 @@ def hbdet_arc_wave_plot(start_date, end_date):
     date_formats['years'] = ['%e %b %Y']
     date_formatter = DatetimeTickFormatter(formats=date_formats)
 
-    p = figure(title=title,
+    p = figure(title="High Resolution",
                x_axis_label='Date',
-               y_axis_label=y_axis_label,
+               y_axis_label='AVG(DeltaX)',
                x_axis_type='datetime',
                tools=[tool_list, _hover])
-    p.scatter(source=source, x='UTStart', y='avg', color='blue', fill_alpha=0.2, size=10)
+    p.scatter(source=source, x='UTStart', y='avg', color='colors', fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
 
@@ -85,40 +94,27 @@ def hbdet_arc_wave_plot(start_date, end_date):
 
 
 @data_quality(name='medium_resolution', caption='')
-def hbdet_arc_wave_plot(start_date, end_date):
-    """Return a <div> element with a HRS arc stability plot.
-
-    The plot shows the HRS wavelenght as a function of pixel position for a set of time
-
-    Params:
-    -------
-    start_date: date
-        Earliest date to include in the plot.
-    end_date: date
-        Earliest date not to include in the plot.
-
-    Return:
-    -------
-    str:
-        A <div> element with the weather downtime plot.
+def hrs_medium_resolution_plot(start_date, end_date):
     """
-    title = "Medium Resolution"
-    y_axis_label = 'AVG(DeltaX)'
+        Return a <div> element with the Medium resolution AVG(DeltaX) vs time.
 
-    # creates your query
+        The plot shows the AVG(DeltaX) for a set of time
+
+        Params:
+        -------
+        start_date: date
+            Earliest date to include in the plot.
+        end_date: date
+            Earliest date not to include in the plot.
+
+        Return:
+        -------
+        str:
+            A <div> element with the Medium resolution AVG(DeltaX) vs time.
+    """
+
     obsmode = 'MEDIUM RESOLUTION'
-    filename = 'H%%'
-    logic = " and OBSMODE='{obsmode}' and DeltaX > -99 and FileName like '{filename}' " \
-            "   and OBSMODE like '{obsmode}' and Object=1 group by UTStart, HrsOrder"\
-        .format(filename=filename, obsmode=obsmode)
-
-    sql = "Select UTStart, HrsOrder, AVG(DeltaX) as avg, CONVERT(UTStart,char) AS Time " \
-          "     from DQ_HrsArc join FileData using (FileData_Id) " \
-          "     where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}" \
-        .format(start_date=start_date, end_date=end_date, obsmode=obsmode, logic=logic)
-
-    df = pd.read_sql(sql, db.engine)
-    source = ColumnDataSource(df)
+    source = get_source(start_date, end_date, obsmode)
 
     tool_list = "pan,reset,save,wheel_zoom, box_zoom"
     _hover = HoverTool(
@@ -134,7 +130,7 @@ def hbdet_arc_wave_plot(start_date, end_date):
                     </div>
                     <div>
                         <span style="font-size: 15px; font-weight: bold;">HrsOrder: </span>
-                        <span style="font-size: 15px;"> @Hr</span>
+                        <span style="font-size: 15px;"> @HrsOrder</span>
                     </div>
                 </div>
                 """
@@ -148,12 +144,12 @@ def hbdet_arc_wave_plot(start_date, end_date):
     date_formats['years'] = ['%e %b %Y']
     date_formatter = DatetimeTickFormatter(formats=date_formats)
 
-    p = figure(title=title,
+    p = figure(title="Medium Resolution",
                x_axis_label='Date',
-               y_axis_label=y_axis_label,
+               y_axis_label='AVG(DeltaX)',
                x_axis_type='datetime',
                tools=[tool_list, _hover])
-    p.scatter(source=source, x='UTStart', y='avg', color='blue', fill_alpha=0.2, size=10)
+    p.scatter(source=source, x='UTStart', y='avg', color='colors', fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
 
@@ -161,40 +157,27 @@ def hbdet_arc_wave_plot(start_date, end_date):
 
 
 @data_quality(name='low_resolution', caption='')
-def hbdet_arc_wave_plot(start_date, end_date):
-    """Return a <div> element with a HRS arc stability plot.
-
-    The plot shows the HRS wavelenght as a function of pixel position for a set of time
-
-    Params:
-    -------
-    start_date: date
-        Earliest date to include in the plot.
-    end_date: date
-        Earliest date not to include in the plot.
-
-    Return:
-    -------
-    str:
-        A <div> element with the weather downtime plot.
+def hrs_low_resolution_plot(start_date, end_date):
     """
-    title = "Low Resolution"
-    y_axis_label = 'AVG(DeltaX)'
+        Return a <div> element with the Low resolution AVG(DeltaX) vs time.
 
-    # creates your query
+        The plot shows the AVG(DeltaX) for a set of time
+
+        Params:
+        -------
+        start_date: date
+            Earliest date to include in the plot.
+        end_date: date
+            Earliest date not to include in the plot.
+
+        Return:
+        -------
+        str:
+            A <div> element with the Low resolution AVG(DeltaX) vs time.
+    """
+
     obsmode = 'LOW RESOLUTION'
-    filename = 'H%%'
-    logic = " and OBSMODE='{obsmode}'  and DeltaX > -99 and FileName like '{filename}' " \
-            "   and OBSMODE like '{obsmode}' and Object=1 group by UTStart, HrsOrder"\
-        .format(filename=filename, obsmode=obsmode)
-
-    sql = "Select UTStart, HrsOrder, AVG(DeltaX) as avg, CONVERT(UTStart,char) AS Time " \
-          "     from DQ_HrsArc join FileData using (FileData_Id) " \
-          "     where UTStart > '{start_date}' and UTStart <'{end_date}' {logic}" \
-        .format(start_date=start_date, end_date=end_date, obsmode=obsmode, logic=logic)
-
-    df = pd.read_sql(sql, db.engine)
-    source = ColumnDataSource(df)
+    source = get_source(start_date, end_date, obsmode)
 
     tool_list = "pan,reset,save,wheel_zoom, box_zoom"
     _hover = HoverTool(
@@ -210,7 +193,7 @@ def hbdet_arc_wave_plot(start_date, end_date):
                     </div>
                     <div>
                         <span style="font-size: 15px; font-weight: bold;">HrsOrder: </span>
-                        <span style="font-size: 15px;"> @Hr</span>
+                        <span style="font-size: 15px;"> @HrsOrder</span>
                     </div>
                 </div>
                 """
@@ -224,12 +207,12 @@ def hbdet_arc_wave_plot(start_date, end_date):
     date_formats['years'] = ['%e %b %Y']
     date_formatter = DatetimeTickFormatter(formats=date_formats)
 
-    p = figure(title=title,
+    p = figure(title="Low Resolution",
                x_axis_label='Date',
-               y_axis_label=y_axis_label,
+               y_axis_label='AVG(DeltaX)',
                x_axis_type='datetime',
                tools=[tool_list, _hover])
-    p.scatter(source=source, x='UTStart', y='avg', color='blue', fill_alpha=0.2, size=10)
+    p.scatter(source=source, x='UTStart', y='avg', color='colors', fill_alpha=0.2, size=10)
 
     p.xaxis[0].formatter = date_formatter
 
