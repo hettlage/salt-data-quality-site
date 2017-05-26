@@ -2,7 +2,7 @@ import pandas as pd
 
 from bokeh.models import HoverTool
 from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
-from bokeh.palettes import Spectral11
+from bokeh.palettes import Plasma256
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
@@ -24,8 +24,12 @@ def get_source(start_date, end_date, obsmode):
 
     df = pd.read_sql(sql, db.engine)
 
-    groups = pd.qcut(df["HrsOrder"].values, len(Spectral11))
-    colors = [Spectral11[xx] for xx in groups.codes]
+    colors = []
+    if len(df) > 0:
+        ord_min = df['HrsOrder'].min()
+        ord_max = df['HrsOrder'].max()
+        colors = [Plasma256[int((y - ord_min) * (len(Plasma256) - 1) / float(ord_max - ord_min))] for y in
+                  df["HrsOrder"]]
     df['colors'] = colors
 
     source = ColumnDataSource(df)
