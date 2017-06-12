@@ -9,6 +9,20 @@ from app import db
 from app.decorators import data_quality
 from app.main.data_quality_plots import data_quality_date_plot
 
+# creates your plot
+date_formatter = DatetimeTickFormatter(formats=dict(
+        microseconds=['%f'],
+        milliseconds=['%S.%2Ns'],
+        seconds=[':%Ss'],
+        minsec=[':%Mm:%Ss'],
+        minutes=['%H:%M:%S'],
+        hourmin=['%H:%M:'],
+        hours=["%H:%M"],
+        days=["%d %b"],
+        months=["%d %b %Y"],
+        years=["%b %Y"],
+    ))
+
 
 @data_quality(name='hbdet_bias', caption=' ')
 def hbdet_bias_plot(start_date, end_date):
@@ -61,14 +75,6 @@ def hbdet_bias_plot(start_date, end_date):
                         </div>
                         """
     )
-
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
 
     p = figure(title=title,
                x_axis_label='Date',

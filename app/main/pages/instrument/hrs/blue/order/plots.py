@@ -8,6 +8,20 @@ from bokeh.plotting import figure, ColumnDataSource
 from app import db
 from app.decorators import data_quality
 
+# creates your plot
+date_formatter = DatetimeTickFormatter(formats=dict(
+        microseconds=['%f'],
+        milliseconds=['%S.%2Ns'],
+        seconds=[':%Ss'],
+        minsec=[':%Mm:%Ss'],
+        minutes=['%H:%M:%S'],
+        hourmin=['%H:%M:'],
+        hours=["%H:%M"],
+        days=["%d %b"],
+        months=["%d %b %Y"],
+        years=["%b %Y"],
+    ))
+
 
 def get_position_source(start_date, end_date, obsmode):
     logic = "   and HrsMode_Id = {obsmode} " \
@@ -81,14 +95,6 @@ def hrs_order_plot(start_date, end_date):
                 """
     )
 
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
-
     p = figure(title="HRS Order",
                x_axis_label='Date',
                y_axis_label='Max(HrsOrder) - Min(HrsOrder)',
@@ -99,6 +105,10 @@ def hrs_order_plot(start_date, end_date):
     p.scatter(source=high_source, x='Date', y='ord', color='blue', fill_alpha=0.2, legend='High', size=10)
 
     p.xaxis[0].formatter = date_formatter
+    p.legend.location = "top_right"
+    p.legend.click_policy = "hide"
+    p.legend.background_fill_alpha = 0.3
+    p.legend.inactive_fill_alpha = 0.8
 
     return p
 
@@ -144,14 +154,6 @@ def hrs_order_position_plot(start_date, end_date):
                 </div>
                 """
     )
-
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
 
     p = figure(title="HRS Order Position High Resolution",
                x_axis_label='Date',
@@ -207,14 +209,6 @@ def hrs_order_position_plot(start_date, end_date):
                 """
     )
 
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
-
     p = figure(title="HRS Order Position Medium Resolution",
                x_axis_label='Date',
                y_axis_label='y_upper',
@@ -268,14 +262,6 @@ def hrs_order_position_plot(start_date, end_date):
                 </div>
                 """
     )
-
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
 
     p = figure(title="HRS Order Position Low Resolution",
                x_axis_label='Date',

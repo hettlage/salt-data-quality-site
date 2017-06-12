@@ -6,6 +6,23 @@ from bokeh.plotting import figure, ColumnDataSource
 from app import db
 from app.decorators import data_quality
 
+# creates your plot
+date_formatter = DatetimeTickFormatter(formats=dict(
+        microseconds=['%f'],
+        milliseconds=['%S.%2Ns'],
+        seconds=[':%Ss'],
+        minsec=[':%Mm:%Ss'],
+        minutes=['%H:%M:%S'],
+        hourmin=['%H:%M:'],
+        hours=["%H:%M"],
+        days=["%d %b"],
+        months=["%d %b %Y"],
+        years=["%b %Y"],
+    ))
+colors = ['red', 'magenta', 'blue', 'orange', 'green', 'purple']
+legends_name = ['z1', 'z2', 'z3', 'z4', 'z5', 'z6']
+y_name = ['mean_z1', 'mean_z2', 'mean_z3', 'mean_z4', 'mean_z5', 'mean_z6']
+
 
 # One plot for Ne at 41.5 articulation setting closed dome test
 @data_quality(name='rss_arcintensity_neon', caption='')
@@ -90,38 +107,18 @@ def _rss_arc_intensity(articulation, lamp, start_date, end_date):
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
 
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
-
     p = figure(title=title,
                x_axis_label='UTStart',
                y_axis_label=y_axis_label,
                x_axis_type='datetime')
     # creating line and circle sepearately; fill_alpha gives a bit of transparency to the circles
     # legends are easily added with legend=...
-    p.line(x='UTStart', y='mean_z1', color='red', source=source, legend='z1')
-    p.circle(x='UTStart', y='mean_z1', color='red', fill_alpha=0.2, size=10, source=source, legend='z1')
-
-    p.line(x='UTStart', y='mean_z2', color='magenta', source=source, legend='z2')
-    p.circle(x='UTStart', y='mean_z2', color='magenta', fill_alpha=0.2, size=10, source=source, legend='z2')
-
-    p.line(x='UTStart', y='mean_z3', color='blue', source=source, legend='z3')
-    p.circle(x='UTStart', y='mean_z3', color='blue', fill_alpha=0.2, size=10, source=source, legend='z3')
-
-    p.line(x='UTStart', y='mean_z4', color='orange', source=source, legend='z4')
-    p.circle(x='UTStart', y='mean_z4', color='orange', fill_alpha=0.2, size=10, source=source, legend='z4')
-
-    p.line(x='UTStart', y='mean_z5', color='green', source=source, legend='z5')
-    p.circle(x='UTStart', y='mean_z5', color='green', fill_alpha=0.2, size=10, source=source, legend='z5')
-
-    p.line(x='UTStart', y='mean_z6', color='purple', source=source, legend='z6')
-    p.circle(x='UTStart', y='mean_z6', color='purple', fill_alpha=0.2, size=10, source=source, legend='z6')
+    for x in range(6):
+        p.line(x='UTStart', y=y_name[x], color=colors[x], source=source, legend=legends_name[x])
+        p.circle(x='UTStart', y=y_name[x], color=colors[x], fill_alpha=0.2, size=10, source=source, legend=legends_name[x])
 
     p.xaxis[0].formatter = date_formatter
+    p.legend.location = "top_right"
+    p.legend.click_policy = "hide"
 
     return p

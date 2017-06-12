@@ -8,6 +8,20 @@ from bokeh.plotting import figure, ColumnDataSource
 from app import db
 from app.decorators import data_quality
 
+# creates your plot
+date_formatter = DatetimeTickFormatter(formats=dict(
+        microseconds=['%f'],
+        milliseconds=['%S.%2Ns'],
+        seconds=[':%Ss'],
+        minsec=[':%Mm:%Ss'],
+        minutes=['%H:%M:%S'],
+        hourmin=['%H:%M:'],
+        hours=["%H:%M"],
+        days=["%d %b"],
+        months=["%d %b %Y"],
+        years=["%b %Y"],
+    ))
+
 
 def get_source(start_date, end_date, obsmode):
     filename = 'H%%'
@@ -77,14 +91,6 @@ def hrs_high_resolution_plot(start_date, end_date):
                 """
     )
 
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
-
     p = figure(title="High Resolution",
                x_axis_label='Date',
                y_axis_label='AVG(DeltaX)',
@@ -140,14 +146,6 @@ def hrs_medium_resolution_plot(start_date, end_date):
                 """
     )
 
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
-
     p = figure(title="Medium Resolution",
                x_axis_label='Date',
                y_axis_label='AVG(DeltaX)',
@@ -202,14 +200,6 @@ def hrs_low_resolution_plot(start_date, end_date):
                 </div>
                 """
     )
-
-    # creates your plot
-    date_formats = DEFAULT_DATETIME_FORMATS()
-    date_formats['hours'] = ['%e %b %Y']
-    date_formats['days'] = ['%e %b %Y']
-    date_formats['months'] = ['%e %b %Y']
-    date_formats['years'] = ['%e %b %Y']
-    date_formatter = DatetimeTickFormatter(formats=date_formats)
 
     p = figure(title="Low Resolution",
                x_axis_label='Date',

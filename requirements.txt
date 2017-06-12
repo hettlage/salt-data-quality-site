@@ -1,5 +1,5 @@
 behave==1.2.5
-bokeh==0.12.2
+bokeh==0.12.5
 click==6.6
 dominate==2.2.1
 ecdsa==0.13
