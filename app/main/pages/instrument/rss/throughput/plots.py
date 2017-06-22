@@ -171,6 +171,7 @@ def hbdet_bias_plot(start_date, end_date):
     file_df['Barcode_low'] = file_df['Barcode'].str.lower()
     file_df['Barcode_low'] = file_df['Barcode_low'].str.replace(' ', '')
     file_df['Barcode_low'] = file_df['Barcode_low'].str.replace('_', '')
+    file_df['Center'] = file_df['Center'] / 10000
 
     results = pd.merge(df, file_df, left_on='Barcode_lower', right_on="Barcode_low", how='left')
     for index, row in results.iterrows():
@@ -206,7 +207,8 @@ def hbdet_bias_plot(start_date, end_date):
                x_axis_label='WaveLength(microns)',
                y_axis_label="Throughput",
                width=1000,
-               tools=[tool_list, _hover])
+               tools=[tool_list, _hover],
+               x_range=(0.4, 0.97))
 
     sot = sorted(range(len(data_list)), key=lambda k: data_list[k])
 
@@ -218,7 +220,7 @@ def hbdet_bias_plot(start_date, end_date):
         d['wavelength'] = date_list[indx]['Wavelength']
         d['hmfw'] = date_list[indx]['HMFW']
 
-        d['colors'] = [Plasma256[int(indx * (len(Plasma256) - 1) / float(len(sot)))]
+        d['colors'] = [Plasma256[int(sot.index(indx) * (len(Plasma256) - 1) / float(len(sot)))]
                       for x in range(len(d['centers']))]
         source = ColumnDataSource(d)
         p.scatter(source=source, y='throughput', x='centers', color=d['colors'][0], fill_alpha=0.2, size=10, legend=data_list[indx])
