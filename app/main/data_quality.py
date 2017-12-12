@@ -1,15 +1,16 @@
 import importlib
 import json
 import os
-
 from bokeh.embed import components
 from bokeh.model import Model
 from dateutil import parser
 from flask import g, render_template
-
+#from app.main.pages.telescope.seeing.simple_plot import simple_indeed
+from  app.main.pages.telescope.seeing.seeing import update
 from app.decorators import store_query_parameters, data_quality_items
 from app.main.date_range_form import DateRangeForm
 from app.main.seeing_form import SeeingForm
+
 
 
 def data_quality_item_html(item, caption=None, export_name='item'):
@@ -114,9 +115,9 @@ def default_data_quality_content_for_date_range(package, default_start_date=None
 
     # update form data from stored parameters
     stored_params = g.stored_query_parameters
-    if 'start_date' in stored_params:
+    if 'start_date' in stored_params and stored_params['start_date'] != '':
         form.start_date.data = parser.parse(stored_params['start_date'])
-    if 'end_date' in stored_params:
+    if 'end_date' in stored_params and stored_params['end_date'] != '':
         form.end_date.data = parser.parse(stored_params['end_date'])
 
     if form.validate():
@@ -128,7 +129,7 @@ def default_data_quality_content_for_date_range(package, default_start_date=None
     return render_template('data_quality/data_quality_query_page.html', form=form.html(), query_results=query_results)
 
 @store_query_parameters(names=('start_date', 'end_date','binning'))
-def seeing_content( default_start_date=None, default_end_date=None ):
+def seeing_content(default_start_date=None, default_end_date=None):
     """Create seeing content for a date range query.
 
        The seeing  content (as created by _default_data_quality_content) is obtained for an optional binning interval and a date range, which
@@ -154,22 +155,21 @@ def seeing_content( default_start_date=None, default_end_date=None ):
 
     # update form data from stored parameters
     stored_params = g.stored_query_parameters
-    if 'start_date' in stored_params:
+    if 'start_date' in stored_params and stored_params['start_date'] != '':
         form.start_date.data = parser.parse(stored_params['start_date'])
-    if 'end_date' in stored_params:
+    if 'end_date' in stored_params and stored_params['start_date'] != '':
         form.end_date.data = parser.parse(stored_params['end_date'])
-    if 'binning' in stored_params:
+    if 'binning' in stored_params and stored_params['start_date'] != '':
         form.binning.data = stored_params['binning']
 
     if form.validate():
         start_date = form.start_date.data
         end_date = form.end_date.data
         binning = form.binning.data
-        query_results = '<h1>HEKE! IYASEBENZA!</h1>'
+        query_results =update(start_date=start_date,end_date=end_date,binning=binning)
     else:
         query_results = ''
     return render_template('data_quality/data_quality_query_page.html', form=form.html(), query_results=query_results)
-
 
 
 def _default_data_quality_content(package, *args, **kwargs):

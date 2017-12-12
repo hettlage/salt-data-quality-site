@@ -34,8 +34,19 @@ class SeeingForm(Form):
         if not self.end_date.data and default_end_date:
             self.end_date.data = default_end_date
 
+
+    def validate_end_date(self,field):
+
+        start = self.start_date.data
+        end = self.end_date.data
+
+        if start >= end:
+            raise ValidationError('The end date must be after the start date')
+        if start == "" or end == "":
+            raise ValidationError('date fields must be filled')
+
     def validate_binning(form, field):
-        input_value = field.data.strip()
+        input_value = field.data
         if input_value == '':
             return
         try:
@@ -44,6 +55,7 @@ class SeeingForm(Form):
                 raise ValidationError("")
         except Exception:
             raise ValidationError('The optional binning interval must be an integer greater than 0.')
+
 
 
     def html(self):

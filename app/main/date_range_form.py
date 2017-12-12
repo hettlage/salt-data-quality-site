@@ -1,7 +1,9 @@
 from flask import render_template
 from flask_wtf import Form
-from wtforms.fields import DateField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.fields import DateField, StringField, SubmitField
+from wtforms.validators import DataRequired,ValidationError
+from dateutil import  parser
+
 
 
 class DateRangeForm(Form):
@@ -32,6 +34,17 @@ class DateRangeForm(Form):
             self.start_date.data = default_start_date
         if not self.end_date.data and default_end_date:
             self.end_date.data = default_end_date
+
+    def validate_end_date(self,field):
+
+        start=self.start_date.data
+        end=self.end_date.data
+
+        if start >= end:
+            raise ValidationError('The end date must be after the start date')
+
+        if start == '' or end == '':
+            raise ValidationError('date fields must be filled')
 
     def html(self):
         return render_template('data_quality/date_range_form.html', form=self)
