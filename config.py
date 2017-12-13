@@ -39,7 +39,11 @@ class Config:
         secret_key = Config._environment_variable('SECRET_KEY', prefix=prefix, config_name=config_name)
 
         # database
-        database_uri = Config._environment_variable('DATABASE_URI', prefix=prefix, config_name=config_name)
+        database_uris = {
+            'sdb': Config._environment_variable('SDB_DATABASE_URI', prefix=prefix, config_name=config_name),
+            'els': Config._environment_variable('ELS_DATABASE_URI', prefix=prefix, config_name=config_name),
+            'suthweather': Config._environment_variable('SUTHWEATHER_DATABASE_URI', prefix=prefix, config_name=config_name)
+        }
 
         # location of log file
         logging_file_base_path = Config._environment_variable('LOGGING_FILE_BASE_PATH',
@@ -118,7 +122,7 @@ class Config:
         with_logging = int(os.environ.get(prefix + 'WITH_LOGGING', True)) != 0
 
         return dict(
-            database_uri=database_uri,
+            database_uris=database_uris,
             flyway_command=flyway_command,
             logging_file_base_path=logging_file_base_path,
             logging_file_logging_level=logging_file_logging_level,
@@ -287,7 +291,11 @@ class Config:
                 app.logger.addHandler(smtp_handler)
 
         # database access
-        app.config['SQLALCHEMY_DATABASE_URI'] = settings['database_uri']
+        app.config['SQLALCHEMY_DATABASE_URI'] = settings['database_uris']['sdb']
+        app.config['SQLALCHEMY_BINDS'] = {
+            'els': settings['database_uris']['els'],
+            'suthweather': settings['database_uris']['suthweather']
+        }
 
         # use SSL?
         app.config['SSL_STATUS'] = False  # settings['ssl_status']

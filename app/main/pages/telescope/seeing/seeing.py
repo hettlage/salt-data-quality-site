@@ -4,17 +4,13 @@ from bokeh.embed import components
 from bokeh.models import ColumnDataSource
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure
-import os
+from flask import current_app
+from app import db
 
-
-
-#sdb connection
-db_connection = sql.connect(host=os.getenv("HOST"), db=os.getenv('DATABASE1'), user= os.getenv('USER'), password=os.getenv('PASSWORD'))
-sdb_con=sql.connect(host= os.getenv("HOST") , database=os.getenv('DATABASE2'), user= os.getenv('USER') , password=os.getenv('PASSWORD'))
-
-#setting date format to be used on the x axis of the plot
+# setting date format to be used on the x axis of the plot
 date_formatter = DatetimeTickFormatter(days=['%e %b %Y'], months=['%e %b %Y'], years=['%e %b %Y'])
 
+# offset value to be added in timestamp in oder to get the exact uct for the database query
 time_offset = 2082844800
 
 mean_source1 = ColumnDataSource()
@@ -26,11 +22,11 @@ median_source=ColumnDataSource()
 difference_source=ColumnDataSource()
 difference_source1=ColumnDataSource()
 
-TOOLS="pan,wheel_zoom,box_zoom,reset,save"
+TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
 
 
-#function to be called when onclick button is used
-#@data_quality(name='seeing', caption=' ')
+# function to be called when onclick button is used
+# @data_quality(name='seeing', caption=' ')
 def update(start_date, end_date, binning):
     """Generate bokeh plots for seeing content using date range and optional binning query.
 
@@ -60,10 +56,10 @@ def update(start_date, end_date, binning):
     first_timestamp = start_date.replace(hour=12).timestamp() + time_offset
     second_timestamp = end_date.replace(hour=12).timestamp() + time_offset
 
-            # query data in mysql database
-    sql1 = 'SELECT  str_to_date(datetime,"%Y-%m-%d %H:%i:%s") AS datetime, seeing  from seeing ' \
-           '    where datetime >= str_to_date("{start_date_}","%Y-%m-%d  %H:%i:%s")' \
-           '    and datetime <= str_to_date("{end_date_}","%Y-%m-%d %H:%i:%s") ' \
+    # query data in mysql database
+    sql1 = 'SELECT  str_to_date(datetime,"%%Y-%%m-%%d %%H:%%i:%%s") AS datetime, seeing  from seeing ' \
+           '    where datetime >= str_to_date("{start_date_}","%%Y-%%m-%%d  %%H:%%i:%%s")' \
+           '    and datetime <= str_to_date("{end_date_}","%%Y-%%m-%%d %%H:%%i:%%s") ' \
         .format(start_date_=str(start_date), end_date_=str(end_date))
 
     sql2 = 'select _timestamp_,ee50,fwhm,timestamp from tpc_guidance_status__timestamp where timestamp >= {start_date_}' \
@@ -71,10 +67,10 @@ def update(start_date, end_date, binning):
            ' order by _timestamp_' \
         .format(start_date_=str(first_timestamp), end_date_=str(second_timestamp))
 
-    df2 = pd.read_sql(sql2, con=sdb_con)
-    df1 = pd.read_sql(sql1, con=db_connection)
+    df2 = pd.read_sql(sql2, db.get_engine(app=current_app, bind='els'))
+    df1 = pd.read_sql(sql1, db.get_engine(app=current_app, bind='suthweather'))
 
-    #seting index time for calcalating mean and average
+    # setting index time for calculating mean and average
     df2.index = df2["_timestamp_"]
     df1.index = df1['datetime']
 
@@ -89,7 +85,7 @@ def update(start_date, end_date, binning):
     source = ColumnDataSource(median1_all)
     median_source1.data = source.data
 
-    #calculate mean and median for fwhm,ee50
+    # calculate mean and median for fwhm,ee50
     mean = df2[['fwhm', 'ee50']].mean()
     mean_all = df2.resample(str(binning) + 'T').mean()
     source3 = ColumnDataSource(mean_all)
@@ -100,7 +96,7 @@ def update(start_date, end_date, binning):
     source4 = ColumnDataSource(median_all)
     median_source.data = source4.data
 
-    #calculate difference for external seeing against fwhm and ee50
+    # calculate difference for external seeing against fwhm and ee50
     dataframes = [mean1_all, mean_all]
     add_dataframes = pd.concat(dataframes, axis=1)
     add_dataframes.index.name = '_timestamp_'
@@ -108,19 +104,19 @@ def update(start_date, end_date, binning):
     datasource = ColumnDataSource(add_dataframes)
     difference_source1.data = datasource.data
 
-    #for difference with ee50
+    # for difference with ee50
     add_dataframes['difference'] = add_dataframes['seeing'] - add_dataframes['ee50']
     datasource = ColumnDataSource(add_dataframes)
     difference_source.data = datasource.data
 
-    #plot labels
+    # plot labels
     p = figure(title="external vs internal seeing ({binning} minute bins)".format(binning=binning), x_axis_type='datetime'
                , x_axis_label='datetime', y_axis_label='seeing',plot_width=1000, plot_height=500,tools=TOOLS)
     dif=figure(title='difference between average internal and external seeing ({binning} minute bins)'.format(binning=binning), x_axis_type='datetime',
                x_axis_label='datetime', y_axis_label='seeing',plot_width=1000, plot_height=500,tools=TOOLS)
 
     #plots
-    #plots for external seeing
+    # plots for external seeing
     p.circle(source=mean_source1, x='datetime',y='seeing', legend="external average" ,fill_color="white",color='green')
     p.line(source=median_source1, x='datetime',y='seeing', legend="external median" ,color='blue')
 

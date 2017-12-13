@@ -18,7 +18,9 @@ The following variables are required for all modes:
 
 | Environment variable | Description | Required | Default | Example |
 | --- | --- | --- | --- | --- | --- |
-| `DATABASE_URI` | URI for the database access | Yes | n/a | `mysql://user:password@your.server.ip/database` |
+| `ELS_DATABASE_URI` | URI for the ELS database access | Yes | n/a | `mysql://user:password@your.server.ip/database` |
+| `SDB_DATABASE_URI` | URI for the SDB database access | Yes | n/a | `mysql://user:password@your.server.ip/database` |
+| `SUTHWEATHER_DATABASE_URI` | URI for the Sutherland weather database access | Yes | n/a | `mysql://user:password@your.server.ip/database` |
 | `LOGGING_FILE_BASE_PATH` | Base path for the error log(s) | Yes | n/a | `/var/log/my-app/errors.log` |
 | `LOGGING_FILE_LOGGING_LEVEL` | Level of logging for logging to a file | No | `ERROR` | `ERROR` |
 | `LOGGING_FILE_MAX_BYTES` | Maximum number of bytes before which the log file is rolled over | No | 5242880 | 1048576 |

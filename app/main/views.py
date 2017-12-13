@@ -32,5 +32,7 @@ def data_quality_page(page):
     try:
         dq = importlib.import_module('app.main.pages.' + page, __package__)
     except ImportError:
+        import traceback
+        traceback.print_exc()
         raise NotFound
     return render_template('data_quality/data_quality_page.html', title=dq.title(), content=dq.content())
