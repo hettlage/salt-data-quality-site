@@ -93,7 +93,9 @@ def update_environment_variables_file():
     """
     settings = Config.settings('production')
     environment_variables = dict(
-        DATABASE_URI=settings['database_uri'],
+        ELS_DATABASE_URI=settings['database_uris']['els'],
+        SDB_DATABASE_URI=settings['database_uris']['sdb'],
+        SUTHWEATHER_DATABASE_URI=settings['database_uris']['suthweather'],
         LOGGING_FILE_BASE_PATH=settings['logging_file_base_path'],
         LOGGING_FILE_LOGGING_LEVEL=settings['logging_file_logging_level_name'],
         LOGGING_FILE_MAX_BYTES=settings['logging_file_max_bytes'],
