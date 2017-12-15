@@ -22,7 +22,7 @@ class SeeingForm(Form):
 
     start_date = DateField('Start', validators=[DataRequired()])
     end_date = DateField('End', validators=[DataRequired()])
-    binning=StringField('binning')
+    binning=StringField('binning interval (minutes)')
     submit = SubmitField('Query')
 
     def __init__(self, default_start_date=None, default_end_date=None):
@@ -46,9 +46,11 @@ class SeeingForm(Form):
             raise ValidationError('date fields must be filled')
 
     def validate_binning(form, field):
+
         input_value = field.data
-        if input_value == '':
+        if input_value is None or input_value == '':
             return
+        input_value = field.data.strip()
         try:
             bin=int(input_value)
             if bin < 1:

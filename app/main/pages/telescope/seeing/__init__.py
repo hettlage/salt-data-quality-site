@@ -10,10 +10,11 @@ def title():
     return 'Seeing'
 
 def content():
-    return seeing_content(default_start_date=datetime.date.today() - datetime.timedelta(days=7),default_end_date= datetime.date.today())
+    return seeing_content(default_start_date=datetime.date.today() - datetime.timedelta(days=7), default_end_date= datetime.date.today())
 
 @store_query_parameters(names=('start_date', 'end_date','binning'))
 def seeing_content(default_start_date=None, default_end_date=None):
+
     """Create seeing content for a date range query.
 
        The seeing  content (as created by _default_data_quality_content) is obtained for an optional binning interval and a date range, which
