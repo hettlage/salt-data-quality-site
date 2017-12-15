@@ -1,5 +1,6 @@
 import pymysql as sql
 import pandas as pd
+import datetime
 from bokeh.embed import components
 from bokeh.models import ColumnDataSource
 from bokeh.models.formatters import DatetimeTickFormatter
@@ -13,20 +14,29 @@ date_formatter = DatetimeTickFormatter(days=['%e %b %Y'], months=['%e %b %Y'], y
 # offset value to be added in timestamp in oder to get the exact uct for the database query
 time_offset = 2082844800
 
+#source for seeing
 mean_source1 = ColumnDataSource()
 median_source1=ColumnDataSource()
 
+#source for ee50
 mean_source = ColumnDataSource()
 median_source=ColumnDataSource()
 
+#source for fwhm
+mean_source2=ColumnDataSource()
+median_source2=ColumnDataSource()
+
 difference_source=ColumnDataSource()
 difference_source1=ColumnDataSource()
+
+difference_source2=ColumnDataSource()
+difference_source3=ColumnDataSource()
 
 TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
 
 
 # function to be called when onclick button is used
-# @data_quality(name='seeing', caption=' ')
+#@data_quality(name='seeing', caption=' ')
 def update(start_date, end_date, binning):
     """Generate bokeh plots for seeing content using date range and optional binning query.
 
@@ -51,10 +61,24 @@ def update(start_date, end_date, binning):
               Default end date for the query.
           optinal_binning: binning
           """
-    global mean_source1,mean_source,median_source1,median_source, difference_source1,difference_source
+    global mean_source1,mean_source,median_source1,median_source, difference_source1,difference_source, difference_source2 , difference_source3, mean_source2, median_source2
 
-    first_timestamp = start_date.replace(hour=12).timestamp() + time_offset
-    second_timestamp = end_date.replace(hour=12).timestamp() + time_offset
+    # if type of start/end date is date, turn it into a datetime,
+    # set time of start/end date time to 12:00
+
+    def convert_time(t):
+        if type(t) == datetime.date:
+            return datetime.datetime(t.year, t.month, t.day, 12, 0, 0, 0)
+        else:
+            return t.replace(hour=12, minute=0, second=0, microsecond=0)
+
+    start_date = convert_time(start_date)
+    end_date = convert_time(end_date)
+    if binning is None:
+        binning = ''
+
+    first_timestamp = start_date.timestamp() + time_offset
+    second_timestamp = end_date.timestamp() + time_offset
 
     # query data in mysql database
     sql1 = 'SELECT  str_to_date(datetime,"%%Y-%%m-%%d %%H:%%i:%%s") AS datetime, seeing  from seeing ' \
@@ -85,29 +109,57 @@ def update(start_date, end_date, binning):
     source = ColumnDataSource(median1_all)
     median_source1.data = source.data
 
-    # calculate mean and median for fwhm,ee50
-    mean = df2[['fwhm', 'ee50']].mean()
+    # calculate mean and median for ee50
+    mean = df2[['ee50']].mean()
     mean_all = df2.resample(str(binning) + 'T').mean()
     source3 = ColumnDataSource(mean_all)
     mean_source.data = source3.data
 
-    median = df2[['fwhm', 'ee50']].median()
+    median = df2[['ee50']].median()
     median_all = df2.resample(str(binning) + 'T').median()
     source4 = ColumnDataSource(median_all)
     median_source.data = source4.data
+
+    #calculate mean and median for fwhm
+    mean = df2[['fwhm']].mean()
+    mean_all1 = df2.resample(str(binning) + 'T').mean()
+    source4 = ColumnDataSource(mean_all)
+    mean_source2.data = source4.data
+
+    median = df2[['fwhm']].median()
+    median_all = df2.resample(str(binning) + 'T').median()
+    source5 = ColumnDataSource(median_all)
+    median_source2.data = source5.data
 
     # calculate difference for external seeing against fwhm and ee50
     dataframes = [mean1_all, mean_all]
     add_dataframes = pd.concat(dataframes, axis=1)
     add_dataframes.index.name = '_timestamp_'
-    add_dataframes['difference1'] = add_dataframes['seeing'] - add_dataframes['fwhm']
-    datasource = ColumnDataSource(add_dataframes)
-    difference_source1.data = datasource.data
-
-    # for difference with ee50
     add_dataframes['difference'] = add_dataframes['seeing'] - add_dataframes['ee50']
-    datasource = ColumnDataSource(add_dataframes)
-    difference_source.data = datasource.data
+    datasource2 = ColumnDataSource(add_dataframes)
+    difference_source.data = datasource2.data
+
+    dataframes = [mean1_all, mean_all1]
+    add_dataframes = pd.concat(dataframes, axis=1)
+    add_dataframes.index.name = '_timestamp_'
+    add_dataframes['difference1'] = add_dataframes['seeing'] - add_dataframes['fwhm']
+    datasource1 = ColumnDataSource(add_dataframes)
+    difference_source1.data = datasource1.data
+
+    # #difference using the median
+    # dataframes2 = [median_all, median1_all]
+    # add_dataframes2 = pd.concat(dataframes2, axis=1)
+    # add_dataframes2.index.name = '_timestamp_'
+    # add_dataframes2['difference2'] = add_dataframes2['seeing'] - add_dataframes2['ee50']
+    # datasource2 = ColumnDataSource(add_dataframes2)
+    # difference_source2.data = datasource2.data
+    #
+    # dataframes3 = [median_all, median1_all]
+    # add_dataframes3 = pd.concat(dataframes3, axis=1)
+    # add_dataframes3.index.name = '_timestamp_'
+    # add_dataframes3['difference3'] = add_dataframes3['seeing'] - add_dataframes3['fwhm']
+    # datasource3 = ColumnDataSource(add_dataframes3)
+    # difference_source3.data = datasource3.data
 
     # plot labels
     p = figure(title="external vs internal seeing ({binning} minute bins)".format(binning=binning), x_axis_type='datetime'
@@ -128,8 +180,12 @@ def update(start_date, end_date, binning):
     p.line(source=median_source, x='_timestamp_', y='fwhm', legend='fwhm median', color='orange')
 
     #for difference
-    dif.circle(source=difference_source1, x='_timestamp_', y='difference1', legend='fwhm difference', fill_color='blue')
-    dif.circle(source=difference_source, x='_timestamp_', y='difference', legend='ee50 difference', color='red')
+    dif.circle(source=difference_source, x='_timestamp_', y='difference', legend='ee50_mean difference', color='red')
+    dif.circle(source=difference_source1, x='_timestamp_', y='difference1', legend='fwhm_mean difference', fill_color='green')
+
+    #
+    # dif.circle(source=difference_source2, x='_timestamp_', y='difference2', legend='ee50_median difference', fill_color='blue')
+    # dif.circle(source=difference_source3, x='_timestamp_', y='difference3', legend='fwhm_median difference', color='orange')
 
     p.xaxis.formatter = date_formatter
     p.legend.location = "top_left"

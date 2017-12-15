@@ -9,22 +9,21 @@
 
     {{ form.submit() }}
 
-
     {% if form.start_date.errors %}
         {% for e in form.start_date.errors %}
-            <span class="error">{{ e }}</span>
+            <span class="error" style="color:red">{{ e }}</span>
         {% endfor %}
     {% endif %}
 
     {% if form.end_date.errors %}
         {% for e in form.end_date.errors %}
-            <span class="error">{{ e }}</span>
+            <span class="error" style="color:red">{{ e }}</span>
         {% endfor %}
     {% endif %}
 
      {% if form.binning.errors %}
         {% for e in form.binning.errors %}
-            <span class="error">{{ e }}</span>
+            <span class="error" style="color:red">{{ e }}</span>
         {% endfor %}
     {% endif %}
 
