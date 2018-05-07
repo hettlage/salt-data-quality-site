@@ -98,36 +98,52 @@ def update(start_date, end_date, binning):
     df2.index = df2["_timestamp_"]
     df1.index = df1['datetime']
 
+    # It seems that Pandas doesn't change the index type if the data frame is empty, which means that resampling
+    # would fail for an empty data frame. As there will be no row for median or mean , it is safe to just use the
+    # original data frame to avoid this problem.
+
     # for external seeing calculating median and mean
-    mean1 = df1[['seeing']].mean()
-    mean1_all = df1.resample(str(binning) + 'T').mean()
+    if not df1.empty:
+        mean1_all = df1.resample(str(binning) + 'T').mean()
+    else:
+        mean1_all = df1.copy(deep=True)
     source1 = ColumnDataSource(mean1_all)
     mean_source1.data = source1.data
 
-    median1 = df1[['seeing']].median()
-    median1_all = df1.resample(str(binning) + 'T').median()
+    if not df1.empty:
+        median1_all = df1.resample(str(binning) + 'T').median()
+    else:
+        median1_all = df1.copy(deep=True)
     source = ColumnDataSource(median1_all)
     median_source1.data = source.data
 
     # calculate mean and median for ee50
-    mean = df2[['ee50']].mean()
-    mean_all = df2.resample(str(binning) + 'T').mean()
+    if not df2.empty:
+        mean_all = df2.resample(str(binning) + 'T').mean()
+    else:
+        mean_all = df2.copy(deep=True)
     source3 = ColumnDataSource(mean_all)
     mean_source.data = source3.data
 
-    median = df2[['ee50']].median()
-    median_all = df2.resample(str(binning) + 'T').median()
+    if not df2.empty:
+        median_all = df2.resample(str(binning) + 'T').median()
+    else:
+        median_all = df2.copy(deep=True)
     source4 = ColumnDataSource(median_all)
     median_source.data = source4.data
 
     #calculate mean and median for fwhm
-    mean = df2[['fwhm']].mean()
-    mean_all1 = df2.resample(str(binning) + 'T').mean()
+    if not df2.empty:
+        mean_all1 = df2.resample(str(binning) + 'T').mean()
+    else:
+        mean_all1 = df2.copy(deep=True)
     source4 = ColumnDataSource(mean_all)
     mean_source2.data = source4.data
 
-    median = df2[['fwhm']].median()
-    median_all = df2.resample(str(binning) + 'T').median()
+    if not df2.empty:
+        median_all = df2.resample(str(binning) + 'T').median()
+    else:
+        median_all = df2.copy(deep=True)
     source5 = ColumnDataSource(median_all)
     median_source2.data = source5.data
 
