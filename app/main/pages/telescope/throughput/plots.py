@@ -63,7 +63,7 @@ def _throughput_plot(throughput_column, title, start_date, end_date):
     df = pd.read_sql(sql, db.engine)
     source = ColumnDataSource(df)
 
-    date_formatter = DatetimeTickFormatter(formats=dict(
+    date_formatter = DatetimeTickFormatter(
         microseconds=['%f'],
         milliseconds=['%S.%3Ns'],
         seconds=[':%Ss'],
@@ -74,7 +74,7 @@ def _throughput_plot(throughput_column, title, start_date, end_date):
         days=["%d %b"],
         months=["%d %b %Y"],
         years=["%b %Y"],
-    ))
+    )
 
     tool_list = "pan,reset,save,wheel_zoom, box_zoom"
     _hover = HoverTool(
