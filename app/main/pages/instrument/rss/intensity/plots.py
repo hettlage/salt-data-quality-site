@@ -1,24 +1,22 @@
 import pandas as pd
 
-from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
 from app.decorators import data_quality
 
 # creates your plot
-date_formatter = DatetimeTickFormatter(formats=dict(
-        microseconds=['%f'],
-        milliseconds=['%S.%2Ns'],
-        seconds=[':%Ss'],
-        minsec=[':%Mm:%Ss'],
-        minutes=['%H:%M:%S'],
-        hourmin=['%H:%M:'],
-        hours=["%H:%M"],
-        days=["%d %b"],
-        months=["%d %b %Y"],
-        years=["%b %Y"],
-    ))
+date_formatter = DatetimeTickFormatter(microseconds=['%f'],
+                                       milliseconds=['%S.%2Ns'],
+                                       seconds=[':%Ss'],
+                                       minsec=[':%Mm:%Ss'],
+                                       minutes=['%H:%M:%S'],
+                                       hourmin=['%H:%M:'],
+                                       hours=["%H:%M"],
+                                       days=["%d %b"],
+                                       months=["%d %b %Y"],
+                                       years=["%b %Y"])
 colors = ['red', 'magenta', 'blue', 'orange', 'green', 'purple']
 legends_name = ['z1', 'z2', 'z3', 'z4', 'z5', 'z6']
 y_name = ['mean_z1', 'mean_z2', 'mean_z3', 'mean_z4', 'mean_z5', 'mean_z6']
@@ -58,15 +56,15 @@ def _rss_arc_intensity(articulation, lamp, start_date, end_date):
     """Return a <div> element with a RSS arc intensity plot.
 
     The plots show the average counts in six detector regions of RSS taken with standard arc calibration data.
-    Purpose: to monitor changes in arc line intensities over time. 
+    Purpose: to monitor changes in arc line intensities over time.
 
     To measure arc intensities on RSS, we split up the product RSS frame into 6 regions:
        _________________________
       |   |   ||   |   ||   |   |
       | 1 | 2 || 3 | 4 || 5 | 6 |
       |___|___||___|___||___|___|
-      
-     Here the || represent chip gaps. 
+
+     Here the || represent chip gaps.
 
     The plot is made for the period between start_date (inclusive) and end_date (exclusive).
 

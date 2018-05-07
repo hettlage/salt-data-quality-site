@@ -1,24 +1,22 @@
 import pandas as pd
 
-from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
 from app.decorators import data_quality
 
 # creates your plot
-date_formatter = DatetimeTickFormatter(formats=dict(
-        microseconds=['%f'],
-        milliseconds=['%S.%2Ns'],
-        seconds=[':%Ss'],
-        minsec=[':%Mm:%Ss'],
-        minutes=['%H:%M:%S'],
-        hourmin=['%H:%M:'],
-        hours=["%H:%M"],
-        days=["%d %b"],
-        months=["%d %b %Y"],
-        years=["%b %Y"],
-    ))
+date_formatter = DatetimeTickFormatter(microseconds=['%f'],
+                                       milliseconds=['%S.%2Ns'],
+                                       seconds=[':%Ss'],
+                                       minsec=[':%Mm:%Ss'],
+                                       minutes=['%H:%M:%S'],
+                                       hourmin=['%H:%M:'],
+                                       hours=["%H:%M"],
+                                       days=["%d %b"],
+                                       months=["%d %b %Y"],
+                                       years=["%b %Y"])
 colors = ['red', 'magenta', 'blue', 'orange', 'green', 'purple']
 legends_name = ['z1', 'z2', 'z3', 'z4', 'z5', 'z6']
 y_name = ['mean_z1', 'mean_z2', 'mean_z3', 'mean_z4', 'mean_z5', 'mean_z6']

@@ -1,7 +1,7 @@
 import pandas as pd
 
 from bokeh.models import HoverTool
-from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.palettes import Plasma256
 from bokeh.plotting import figure, ColumnDataSource
 
@@ -9,18 +9,16 @@ from app import db
 from app.decorators import data_quality
 
 # creates your plot
-date_formatter = DatetimeTickFormatter(formats=dict(
-        microseconds=['%f'],
-        milliseconds=['%S.%2Ns'],
-        seconds=[':%Ss'],
-        minsec=[':%Mm:%Ss'],
-        minutes=['%H:%M:%S'],
-        hourmin=['%H:%M:'],
-        hours=["%H:%M"],
-        days=["%d %b"],
-        months=["%d %b %Y"],
-        years=["%b %Y"],
-    ))
+date_formatter = DatetimeTickFormatter(microseconds=['%f'],
+                                       milliseconds=['%S.%2Ns'],
+                                       seconds=[':%Ss'],
+                                       minsec=[':%Mm:%Ss'],
+                                       minutes=['%H:%M:%S'],
+                                       hourmin=['%H:%M:'],
+                                       hours=["%H:%M"],
+                                       days=["%d %b"],
+                                       months=["%d %b %Y"],
+                                       years=["%b %Y"])
 
 
 def get_position_source(start_date, end_date, obsmode):

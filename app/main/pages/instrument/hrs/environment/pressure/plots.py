@@ -8,18 +8,16 @@ from app import db
 from app.decorators import data_quality
 
 # creates your plot
-date_formatter = DatetimeTickFormatter(formats=dict(
-        microseconds=['%f'],
-        milliseconds=['%S.%2Ns'],
-        seconds=[':%Ss'],
-        minsec=[':%Mm:%Ss'],
-        minutes=['%H:%M:%S'],
-        hourmin=['%H:%M:'],
-        hours=["%H:%M"],
-        days=["%d %b"],
-        months=["%d %b %Y"],
-        years=["%b %Y"],
-    ))
+date_formatter = DatetimeTickFormatter(microseconds=['%f'],
+                                       milliseconds=['%S.%2Ns'],
+                                       seconds=[':%Ss'],
+                                       minsec=[':%Mm:%Ss'],
+                                       minutes=['%H:%M:%S'],
+                                       hourmin=['%H:%M:'],
+                                       hours=["%H:%M"],
+                                       days=["%d %b"],
+                                       months=["%d %b %Y"],
+                                       years=["%b %Y"])
 
 
 @data_quality(name='dew_pressure', caption=' ')

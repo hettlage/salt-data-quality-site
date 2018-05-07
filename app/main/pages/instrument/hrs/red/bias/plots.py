@@ -1,27 +1,23 @@
 import pandas as pd
 
-from bokeh.embed import components
 from bokeh.models import HoverTool
-from bokeh.models.formatters import DatetimeTickFormatter, DEFAULT_DATETIME_FORMATS
+from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure, ColumnDataSource
 
 from app import db
 from app.decorators import data_quality
-from app.main.data_quality_plots import data_quality_date_plot
 
 # creates your plot
-date_formatter = DatetimeTickFormatter(formats=dict(
-        microseconds=['%f'],
-        milliseconds=['%S.%2Ns'],
-        seconds=[':%Ss'],
-        minsec=[':%Mm:%Ss'],
-        minutes=['%H:%M:%S'],
-        hourmin=['%H:%M:'],
-        hours=["%H:%M"],
-        days=["%d %b"],
-        months=["%d %b %Y"],
-        years=["%b %Y"],
-    ))
+date_formatter = DatetimeTickFormatter(microseconds=['%f'],
+                                       milliseconds=['%S.%2Ns'],
+                                       seconds=[':%Ss'],
+                                       minsec=[':%Mm:%Ss'],
+                                       minutes=['%H:%M:%S'],
+                                       hourmin=['%H:%M:'],
+                                       hours=["%H:%M"],
+                                       days=["%d %b"],
+                                       months=["%d %b %Y"],
+                                       years=["%b %Y"])
 
 
 @data_quality(name='hrdet_bias', caption=' ')
