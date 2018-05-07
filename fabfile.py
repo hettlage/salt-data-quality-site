@@ -218,14 +218,14 @@ def deploy(with_setting_up=False):
         Set up the server bvefore deploying the site.
     """
 
-    # test everything
-    local('./run_tests.sh')
-
-    # push Git content to the remote repository
-    local('git push')
-
-    # migrate database
-    migrate_database()
+    # # test everything
+    # local('./run_tests.sh')
+    #
+    # # push Git content to the remote repository
+    # local('git push')
+    #
+    # # migrate database
+    # migrate_database()
 
     if with_setting_up:
         # upgrade/update apt
