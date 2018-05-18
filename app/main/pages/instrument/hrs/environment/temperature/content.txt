@@ -1,4 +1,3 @@
-ccd_temp
 temp_xcam
 temp_air
 temp_vac

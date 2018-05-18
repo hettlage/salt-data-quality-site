@@ -21,59 +21,6 @@ date_formatter = DatetimeTickFormatter(microseconds=['%f'],
                                        years=["%b %Y"])
 
 
-@data_quality(name='ccd_temp', caption='')
-def ccd_temp_plot(start_date, end_date):
-    """Return a <div> element with a HRS temperature plot.
-
-    The plot shows the HRS temperature for the period between start_date (inclusive) and end_date (exclusive).
-
-    Params:
-    -------
-    start_date: date
-        Earliest date to include in the plot.
-    end_date: date
-        Earliest date not to include in the plot.
-
-    Return:
-    -------
-    str:
-        A <div> element with the temperature plot.
-    """
-    title = "HRS CCD Temp"
-    y_axis_label = 'Temperature (K)'
-
-    # creates your query
-    tool_list = "pan,reset,save,wheel_zoom, box_zoom"
-    _hover = HoverTool(
-        tooltips="""
-        <div>
-            <div>
-                <span style="font-size: 15px; font-weight: bold;">Date: </span>
-                <span style="font-size: 15px;"> @Time</span>
-            </div>
-            <div>
-                <span style="font-size: 15px; font-weight: bold;">Pixel Position: </span>
-                <span style="font-size: 15px;"> @TEM_VAC</span>
-            </div>
-            <div>
-                <span style="font-size: 15px; font-weight: bold;">Filename: </span>
-                <span style="font-size: 15px;"> @FileName</span>
-            </div>
-        </div>
-    """
-    )
-
-    p = figure(title=title,
-               x_axis_label='Date',
-               y_axis_label=y_axis_label,
-               x_axis_type='datetime',
-               tools=[tool_list, _hover])
-
-    p.xaxis[0].formatter = date_formatter
-
-    return p
-
-
 @data_quality(name='temp_xcam', caption='')
 def temp_xcam_plot(start_date, end_date):
     """Return a <div> element with a HRS RCAM and BCAM temperature plot.
