@@ -513,8 +513,8 @@ def temp_air_plot(start_date, end_date):
     return p
 
 
-@data_quality(name='temp_iob', caption='')
-def temp_air_plot(start_date, end_date):
+@data_quality(name='temp_iod', caption='')
+def temp_iod_plot(start_date, end_date):
     """Return a <div> element with a HRS temperature plot.
 
     The plot shows the HRS temperature for the period between start_date (inclusive) and end_date (exclusive).
